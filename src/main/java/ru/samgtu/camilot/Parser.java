@@ -76,10 +76,8 @@ public class Parser {
                 list.add(Integer.parseInt(token.getIndex()));
             }
         }
-        Collections.sort(list);
 
-        if (list.size() > 0) return list.get(list.size()-1);
-        return -1;
+        return list.size();
     }
 
     /**
@@ -107,7 +105,7 @@ public class Parser {
                     } else break;
                 }
 
-                if (type != EnumTokenType.W && sb.length() == 0) throw new TokenIndexException("Введена некорректная строка. Причина: некорректный индекс после токена"); //Если
+                if (type != EnumTokenType.W && sb.length() == 0) throw new TokenIndexException("Введена некорректная строка. Причина: некорректный индекс после токена. Индекс в строке: " + i); //Если
                 else {
                     tokens.add(new Token(type, sb.toString()));
                 }

@@ -9,14 +9,17 @@ import ru.samgtu.camilot.gui.Bot;
 import ru.samgtu.camilot.gui.MainScene;
 import ru.samgtu.camilot.objects.Token;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class Modeller {
 
     private static int tokenIndex = 0;
     private static int step = 0;
-    private static boolean waitForValue = false;
-    private static boolean boolValue;
+    public static boolean waitForValue = false;
+    public static boolean hasValue;
+    public static boolean inputValue;
 
     /**
      * Метод моделирования работы ЛСА
@@ -24,7 +27,7 @@ public class Modeller {
      * @param type тип моделирования
      * @throws ModellerVarCountException ошибка при моделировании
      */
-    public static void model(List<Token> tokens, EnumCalculateType type) throws ModellerVarCountException {
+    public static void model(List<Token> tokens, EnumCalculateType type) throws Exception {
         MainScene mainScene = Main.getMainScene();
         int varCount = Parser.getVarsCount(tokens);
 
@@ -34,8 +37,36 @@ public class Modeller {
         String input = mainScene.inputTF.getText();
 
 
+        switch (type) {
+            case COMMON:
+                if (input.length() != varCount) throw new ModellerVarCountException("Некорректные входные данные. Вы ввели " + input.length() + " значений, а требуется " + varCount + ".");
+
+                boolean[] xs = new boolean[varCount];
+                for (int i = 0; i < varCount; i++) xs[i] = Validator.parseBoolean(input.charAt(i));
+                mainScene.outputTF.setText(common(tokens, xs));
+                break;
+            case STEP_BY_STEP:
+                Main.getMainScene().setNextStepFunc(e -> {
+                    if (waitForValue) {
+                        try {
+                            inputValue = Validator.parseBoolean(mainScene.inputTF.getText());
+                            waitForValue = false;
+                            stepByStep(tokens, Main.getMainScene());
+                        } catch (TokenCheckerException e1) {
+                            mainScene.updateStatus(e1.getMessage());
+                        }
+                    }
+                    stepByStep(tokens, mainScene);
+                    mainScene.inputTF.setText("");
+                });
+                break;
+            case ALL:
+                break;
+        }
+
+        /*
+
         if (type == EnumCalculateType.COMMON) {
-            if (input.length() != varCount) throw new ModellerVarCountException("Некорректные входные данные. Вы ввели " + input.length() + " значений, а требуется " + varCount + ".");
             //Modeller.common(tokens, mainScene);
         } else if (type == EnumCalculateType.STEP_BY_STEP) {
             Main.getMainScene().setNextStepFunc(e -> {
@@ -54,13 +85,11 @@ public class Modeller {
         } else if (type == EnumCalculateType.ALL) {
             Modeller.all(tokens, mainScene);
         }
+
+         */
     }
 
-    private static void modelBot(List<Token> tokens, boolean[] x) {
-
-    }
-
-    public static String doTokens(List<Token> tokens, Bot bot) throws TokenIndexException {
+    public static String modelBot(List<Token> tokens, Bot bot) throws TokenIndexException {
         int waitedIndex; //Индекс логического значения в массиве
         boolean waitForUpArrow = false; //должна ли сработать следующая UP-стрелка
         boolean[] xs = bot.checkDirections(bot.getField().getTiles());
@@ -108,48 +137,85 @@ public class Modeller {
         }
     }
 
-    private static List<Token> common(List<Token> tokens, boolean[] x) {
-        //String input = mainScene.inputTF.getText();
-        int index;
+    private static String common(List<Token> tokens, boolean[] xs) {
+        int waitedIndex; //Индекс логического значения в массиве
+        boolean waitForUpArrow = false; //должна ли сработать следующая UP-стрелка
+        Set<Integer> x = new HashSet<>();
 
-        for (Token token: tokens) {
-            if (token.getType() == EnumTokenType.X) {
+        StringBuilder result = new StringBuilder();
 
-            } else if (token.getType() == EnumTokenType.Y) {
-                index = Integer.parseInt(token.getIndex());
-                //mainScene.outputTF.appendText(String.valueOf(input.charAt(index-1)));
+        tokenIndex = 0;
+        step = 0;
+
+        while (true) {
+            Token token = tokens.get(tokenIndex); //Получаю текущий токен
+            switch (token.getType()) {
+                case Y:
+                    //Если это Yn токен, то записываю его в строку и перехожу к слежующему токену
+                    result.append(token.toString());
+                    if (token.getIndex().equals("к")) return result.toString();
+                    break;
+                case X:
+                    waitedIndex = Integer.parseInt(token.getIndex()); //Получаю индекс проверяемого значения в массиве xs
+
+                    if (xs[waitedIndex])
+                        waitForUpArrow = true; //Если логическая переменная верная, то включаю ожидание UP-стрелки
+                    break;
+                case UP:
+                    if (waitForUpArrow) {
+                        tokenIndex = getDownTokenIndex(tokens, token.getIndex());
+                        waitForUpArrow = false;
+                    }
+                    break;
+                case W:
+                    waitForUpArrow = true;
+                    break;
             }
+
+            tokenIndex++;
+            step++;
         }
-        return null;
     }
 
-    private static void stepByStep(List<Token> tokens, MainScene mainScene) {
-        Token token = tokens.get(tokenIndex);
-        EnumTokenType type = token.getType();
+    private static Token stepByStep(List<Token> tokens, MainScene mainScene) {
+        boolean waitForUpArrow = false; //должна ли сработать следующая UP-стрелка
+        hasValue = false;
+        waitForValue = false;
 
-        switch (type) {
+
+        Token token = tokens.get(tokenIndex); //Получаю текущий токен
+        switch (token.getType()) {
             case Y:
-                if (!token.getIndex().equals("н") && !token.getIndex().equals("к")) {
-                    mainScene.outputTF.appendText(token.toString());
+                //Если это Yn токен, то записываю его в строку и перехожу к слежующему токену
+                return token;
+            case X:
+                if (!waitForValue && !hasValue) waitForValue = true;
+
+                if (waitForValue) {
+                    mainScene.updateStatus("Шаг: " + step + "; Введите логическое значение для " + tokens.get(tokenIndex).toString());
+                }
+                else {
+                    if (inputValue) {
+                        waitForUpArrow = true; //Если логическая переменная верная, то включаю ожидание UP-стрелки
+                        hasValue = false;
+                    }
                 }
                 break;
-            case X:
-                waitForValue = true;
-                mainScene.updateStatus("Шаг: " + step + "; Введите логическое значение для " + tokens.get(tokenIndex).toString());
-                break;
             case UP:
-                if (boolValue) {
+                if (waitForUpArrow) {
                     tokenIndex = getDownTokenIndex(tokens, token.getIndex());
+                    waitForUpArrow = false;
                 }
                 break;
             case W:
-                boolValue = true;
+                waitForUpArrow = true;
                 break;
         }
 
         if (!waitForValue) tokenIndex++;
 
         step++;
+        return null;
     }
 
     /**

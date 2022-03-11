@@ -63,6 +63,18 @@ public class Validator {
 
     /**
      * Валидация входного логического значения
+     * @param ch входное значение
+     * @return логическое значение
+     * @throws TokenCheckerException ошибка при некорректном значении
+     */
+    public static boolean parseBoolean(char ch) throws TokenCheckerException {
+        if (ch == '1') return true;
+        else if (ch == '0') return false;
+        else throw new TokenCheckerException("Введено некорректное входное значение.");
+    }
+
+    /**
+     * Валидация входного логического значения
      * @param s входное значение
      * @return логическое значение
      * @throws TokenCheckerException ошибка при некорректном значении

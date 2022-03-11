@@ -7,7 +7,6 @@ import javafx.scene.layout.AnchorPane;
 import ru.samgtu.camilot.GuiConstructor;
 import ru.samgtu.camilot.Main;
 import ru.samgtu.camilot.Modeller;
-import ru.samgtu.camilot.Parser;
 import ru.samgtu.camilot.enums.EnumDirection;
 import ru.samgtu.camilot.enums.EnumTileType;
 import ru.samgtu.camilot.objects.ScreenShot;
@@ -47,7 +46,7 @@ public class Bot {
 
     public void nextStep(List<Token> list) {
         try {
-            Modeller.doTokens(list, this);
+            Modeller.modelBot(list, this);
         } catch (Exception e) {
             Main.getMainScene().updateStatus(e.getMessage());
         }
