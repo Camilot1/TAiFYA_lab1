@@ -6,7 +6,6 @@ import ru.samgtu.camilot.objects.Token;
 public class Validator {
 
 
-
     public static Token validateToken(String s) {
         if (s.length() != 2) return null;
 
@@ -17,6 +16,11 @@ public class Validator {
         }
     }
 
+    /**
+     * Метод валидации строки.
+     * @param s входящая строка
+     * @return строка с исправленым регистром и раскладкой
+     */
     public static String validateString(String s) {
         StringBuilder sb = new StringBuilder();
 
@@ -27,12 +31,22 @@ public class Validator {
         return sb.toString();
     }
 
+    /**
+     * Метод проверки, является ли символ корректным индексом
+     * @param ch символ
+     * @return результат проверки
+     */
     public static boolean isIndexChar(char ch) {
         if ((int)ch > 47 && (int)ch < 58) return true; //цифра от 0 до 9
         if (ch == 'к' || ch == 'н') return true;
         return false;
     }
 
+    /**
+     * Метод валидации символа. Исправляет регистр и раскладку символа
+     * @param ch
+     * @return
+     */
     public static char validateChar(char ch) {
         switch (ch) {
             case 'У': //русская в английскую
@@ -47,6 +61,12 @@ public class Validator {
         }
     }
 
+    /**
+     * Валидация входного логического значения
+     * @param s входное значение
+     * @return логическое значение
+     * @throws TokenCheckerException ошибка при некорректном значении
+     */
     public static boolean parseBoolean(String s) throws TokenCheckerException {
         if (s.length() != 1) throw new TokenCheckerException("Введено некорректное входное значение.");
 

@@ -31,7 +31,7 @@ public class Token {
 
     @Override
     public String toString() {
-        return "Token = " + type.getChar() + index + "; ";
+        return type.getChar() + index;
     }
 
     @Override

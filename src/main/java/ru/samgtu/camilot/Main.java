@@ -12,8 +12,8 @@ public class Main extends Application {
     public void start(Stage primaryStage) {
 
         primaryStage.setTitle("Программа");
-        primaryStage.setWidth(800);
-        primaryStage.setHeight(400);
+        primaryStage.setWidth(1600);
+        primaryStage.setHeight(800);
 
         mainScene = new MainScene();
         primaryStage.setScene(mainScene.getScene());

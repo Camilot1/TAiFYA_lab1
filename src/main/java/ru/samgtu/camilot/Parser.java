@@ -19,10 +19,14 @@ public class Parser {
             Token token = list.get(i);
             Token tempToken;
 
+
+            /*
             //Проверка на дополнительные Yн и Yк
             if (token.getType() == EnumTokenType.Y &&
                     (token.getIndex().equals("н") || token.getIndex().equals("к"))
             ) throw new TokenCheckerException("Некорректные данные. Причина: в данных присутствуют лишние Yн или Yк");
+
+             */
 
             if (token.getType() == EnumTokenType.W) {
                 if (i == list.size() - 1)
@@ -59,6 +63,11 @@ public class Parser {
         }
     }
 
+    /**
+     * Метод поиска максимального индекса логических операторов Xn
+     * @param tokens список токенов
+     * @return максимальный индекс логических операторов Xn
+     */
     public static int getVarsCount(List<Token> tokens) {
         List<Integer> list = new ArrayList<>();
 
@@ -73,17 +82,13 @@ public class Parser {
         return -1;
     }
 
-    public static List<Token> parseString(String s) throws Exception {
-
-        List<Token> tokens;
-        if (s.length() <= 4) throw new StringSizeException();
-
-        tokens = parseTokenString(Validator.validateString(s.substring(2, s.length()-2)));
-
-        return tokens;
-    }
-
-    private static List<Token> parseTokenString(String s) throws Exception {
+    /**
+     * Метод парсинга строки с ЛСА на токены
+     * @param s строка с ЛСА
+     * @return список токенов
+     * @throws Exception ошибка при парсинге токенов
+     */
+    public static List<Token> parseTokenString(String s, boolean checkStartAndEnd) throws Exception {
         int i = 0;
         StringBuilder sb = new StringBuilder();
         List<Token> tokens = new ArrayList<>();
@@ -102,13 +107,20 @@ public class Parser {
                     } else break;
                 }
 
-                if (type != EnumTokenType.W && sb.length() == 0) throw new TokenIndexException(); //Если
+                if (type != EnumTokenType.W && sb.length() == 0) throw new TokenIndexException("Введена некорректная строка. Причина: некорректный индекс после токена"); //Если
                 else {
                     tokens.add(new Token(type, sb.toString()));
                 }
                 sb.setLength(0);
             } else throw new Exception();
             i++;
+        }
+
+        if (checkStartAndEnd) {
+            if (!tokens.contains(new Token(EnumTokenType.Y, "н")))
+                throw new TokenCheckerException("Ошибка. В ЛСА не найден Yн");
+            if (!tokens.contains(new Token(EnumTokenType.Y, "к")))
+                throw new TokenCheckerException("Ошибка. В ЛСА не найден Yк");
         }
 
         return tokens;
