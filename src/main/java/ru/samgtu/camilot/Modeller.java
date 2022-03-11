@@ -46,6 +46,7 @@ public class Modeller {
                 mainScene.outputTF.setText(common(tokens, xs));
                 break;
             case STEP_BY_STEP:
+                tokenIndex = 0;
                 Main.getMainScene().setNextStepFunc(e -> {
                     if (waitForValue) {
                         try {

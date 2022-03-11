@@ -8,7 +8,7 @@ import ru.samgtu.camilot.enums.EnumTileType;
 
 public class Tile {
 
-    public static final Vec2d size = new Vec2d(16, 16);
+    public static final Vec2d size = new Vec2d(32, 32);
     public static final Vec2d startDif = new Vec2d(5, 5);
     public static final double gap = 0;
 

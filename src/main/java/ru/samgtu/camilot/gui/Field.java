@@ -38,7 +38,6 @@ public class Field {
     private static int counter = 0;
 
     private static int currentScreenShot;
-    private static boolean isPlaying;
 
     private final List<ScreenShot> screenShots;
 
@@ -98,14 +97,12 @@ public class Field {
     }
 
     private void firstScreenShot() {
-        if (isPlaying) return;
         if (screenShots == null || screenShots.size() == 0) return;
         currentScreenShot = 0;
         bot.loadScreenShot(screenShots.get(currentScreenShot));
     }
 
     private void prevScreenShot() {
-        if (isPlaying) return;
         if (currentScreenShot > 0) currentScreenShot--;
         if (screenShots == null || screenShots.size() <= currentScreenShot) return;
         bot.loadScreenShot(screenShots.get(currentScreenShot));
@@ -113,31 +110,25 @@ public class Field {
 
     private void play() {
         firstScreenShot();
-        isPlaying = true;
         Timeline timeline = new Timeline (
                 new KeyFrame(
                         Duration.millis(getPlayFrameDelay()), //1000 мс * 60 сек = 1 мин
                         ae -> {
-                            isPlaying = false;
                             nextScreenShot();
-                            isPlaying = true;
                         }
                 )
         );
         timeline.setCycleCount(screenShots.size()); //Ограничим число повторений
         timeline.play();
-        isPlaying = false;
     }
 
     private void nextScreenShot() {
-        if (isPlaying) return;
         if (screenShots == null) return;
         if (currentScreenShot + 1 < screenShots.size()) currentScreenShot++;
         bot.loadScreenShot(screenShots.get(currentScreenShot));
     }
 
     private void lastScreenShot() {
-        if (isPlaying) return;
         if (screenShots == null || screenShots.size() == 0) return;
         currentScreenShot = screenShots.size()-1;
         bot.loadScreenShot(screenShots.get(currentScreenShot));
