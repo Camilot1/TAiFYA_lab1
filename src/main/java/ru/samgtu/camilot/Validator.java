@@ -5,17 +5,6 @@ import ru.samgtu.camilot.objects.Token;
 
 public class Validator {
 
-
-    public static Token validateToken(String s) {
-        if (s.length() != 2) return null;
-
-        try {
-            return new Token(s);
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
     /**
      * Метод валидации строки.
      * @param s входящая строка

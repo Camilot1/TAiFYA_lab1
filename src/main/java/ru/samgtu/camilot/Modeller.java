@@ -20,6 +20,7 @@ public class Modeller {
     public static boolean waitForValue = false;
     public static boolean hasValue;
     public static boolean inputValue;
+    public static boolean waitForUpArrow = false; //должна ли сработать следующая UP-стрелка
 
     /**
      * Метод моделирования работы ЛСА
@@ -179,7 +180,6 @@ public class Modeller {
     }
 
     private static Token stepByStep(List<Token> tokens, MainScene mainScene) {
-        boolean waitForUpArrow = false; //должна ли сработать следующая UP-стрелка
         hasValue = false;
         waitForValue = false;
 

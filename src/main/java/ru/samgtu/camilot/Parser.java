@@ -1,13 +1,11 @@
 package ru.samgtu.camilot;
 
 import ru.samgtu.camilot.enums.EnumTokenType;
-import ru.samgtu.camilot.exceptions.StringSizeException;
 import ru.samgtu.camilot.exceptions.TokenCheckerException;
 import ru.samgtu.camilot.exceptions.TokenIndexException;
 import ru.samgtu.camilot.objects.Token;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 
@@ -18,7 +16,6 @@ public class Parser {
         while (i < list.size()) {
             Token token = list.get(i);
             Token tempToken;
-
 
             /*
             //Проверка на дополнительные Yн и Yк
@@ -49,8 +46,6 @@ public class Parser {
                     if (i2 == list.size()) throw new TokenCheckerException("Некорректные данные. Причина: стрелка вверх указывает на несуществующую стрелку вниз. Номер токена: " + i+1);
                 }
             }
-
-
             i++;
         }
 
