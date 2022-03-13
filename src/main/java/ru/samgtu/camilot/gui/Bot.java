@@ -60,7 +60,7 @@ public class Bot {
                 break;
             case "Y2":
                 moveByDifference(direction.getPositionDifference());
-                System.out.println("Передвинулся на " + direction.getPositionDifference() + " клеток на позицию " + position.x + ", " + position.y);
+                System.out.println("Передвинулся на " + direction.getPositionDifference() + " клеток на позицию " + position);
                 break;
             case "Y3":
                 direction = direction.getRotatedDirection(1);

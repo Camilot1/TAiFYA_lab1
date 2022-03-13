@@ -9,6 +9,7 @@ import ru.samgtu.camilot.gui.Bot;
 import ru.samgtu.camilot.gui.MainScene;
 import ru.samgtu.camilot.objects.Token;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -63,6 +64,7 @@ public class Modeller {
                 });
                 break;
             case ALL:
+                all(tokens, mainScene, varCount);
                 break;
         }
 
@@ -234,7 +236,47 @@ public class Modeller {
         return -1;
     }
 
-    private static void all(List<Token> tokens, MainScene mainScene) {
+    private static void all(List<Token> tokens, MainScene mainScene, int varCount) {
+        boolean[][] xs = getBinaryMatrix(varCount);
 
+        for (int i = 0; i < xs[0].length; i++) { //пробегаюсь по вариантам
+            common(tokens, xs[i]);
+        }
+
+
+    }
+
+    public static boolean[][] getBinaryMatrix(int size) {
+        int count = (int)Math.round(Math.pow(2, size));
+        boolean[][] matrix = new boolean[count][size];
+
+        int mask = 1;
+        int temp;
+        for (int x = 0; x < count; x++) {
+            mask = 1;
+            for (int y = 0; y < size; y++) {
+                matrix[x][y] = (y & mask) == mask;
+                mask <<= 1;
+            }
+        }
+        return matrix;
+    }
+
+    public static String[] getBinaryList(int size) {
+        int count = (int)Math.round(Math.pow(2, size));
+
+        String[] array = new String[count];
+        StringBuilder sb = new StringBuilder();
+
+        for (int i = 0; i < count; i++) {
+            sb.setLength(0);
+            array[i] = Integer.toBinaryString(i);
+            for (int j = 0; j < size - array[i].length(); j++) {
+                sb.append('0');
+            }
+            array[i] = sb.append(array[i]).toString();
+        }
+
+        return array;
     }
 }
