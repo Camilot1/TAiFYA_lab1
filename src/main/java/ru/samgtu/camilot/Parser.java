@@ -1,8 +1,7 @@
 package ru.samgtu.camilot;
 
 import ru.samgtu.camilot.enums.EnumTokenType;
-import ru.samgtu.camilot.exceptions.TokenCheckerException;
-import ru.samgtu.camilot.exceptions.TokenIndexException;
+import ru.samgtu.camilot.gui.MainScene;
 import ru.samgtu.camilot.objects.Token;
 
 import java.util.ArrayList;
@@ -11,27 +10,28 @@ import java.util.List;
 
 public class Parser {
 
-    public static void checkTokenList(List<Token> list) throws TokenCheckerException {
+    public static void checkTokenList(List<Token> list) throws Exception {
         int i = 0;
+        int yStartCount = 0, yEndCount = 0;
+
+        if (!list.get(0).toString().equals("Yн")) throw new Exception("Некорректная ЛСА. Причина: ЛСА начинается не с Yн");
+        if (!list.get(list.size()-1).toString().equals("Yк")) throw new Exception("Некорректная ЛСА. Причина: ЛСА заканчивается не на Yк");
+
         while (i < list.size()) {
             Token token = list.get(i);
             Token tempToken;
 
-            /*
             //Проверка на дополнительные Yн и Yк
-            if (token.getType() == EnumTokenType.Y &&
-                    (token.getIndex().equals("н") || token.getIndex().equals("к"))
-            ) throw new TokenCheckerException("Некорректные данные. Причина: в данных присутствуют лишние Yн или Yк");
+            if (token.toString().equals("Yн")) yStartCount++;
+            else if (token.toString().equals("Yк")) yEndCount++;
 
-             */
+            if (yStartCount > 1) throw new Exception("Некорректная ЛСА. Причина: присутствует несколько Yн");
+            else if (yEndCount > 1) throw new Exception("Некорректная ЛСА. Причина: присутствует несколько Yк");
 
             if (token.getType() == EnumTokenType.W) {
-                if (i == list.size() - 1)
-                    throw new TokenCheckerException("Некорректные данные. Причина: в безусловный переход расположен в конце");
-
                 tempToken = list.get(i+1);
                 if (tempToken.getType() != EnumTokenType.UP && tempToken.getType() != EnumTokenType.DOWN)
-                    throw new TokenCheckerException("Некорректные данные. Причина: после безусловного перехода нет стелок");
+                    throw new Exception("Некорректная ЛСА. Причина: после безусловного перехода нет стелок");
             }
 
             if (token.getType() == EnumTokenType.UP) {
@@ -43,7 +43,7 @@ public class Parser {
                     }
                     i2++;
 
-                    if (i2 == list.size()) throw new TokenCheckerException("Некорректные данные. Причина: стрелка вверх указывает на несуществующую стрелку вниз. Номер токена: " + i+1);
+                    if (i2 == list.size()) throw new Exception("Некорректная ЛСА. Причина: стрелка вверх указывает на несуществующую стрелку вниз. Номер токена в строке: " + i);
                 }
             }
             i++;
@@ -52,10 +52,11 @@ public class Parser {
         HashSet<String> xList = new HashSet<>();
         for (Token token: list) {
             if (token.getType() == EnumTokenType.X) {
-                if (xList.contains(token.getIndex())) throw new TokenCheckerException("Некорректные данные. Причина: повторяется условный оператор " + token.toString());
+                if (xList.contains(token.getIndex())) throw new Exception("Некорректная ЛСА. Причина: повторяется условный оператор " + token.toString());
                 else xList.add(token.getIndex());
             }
         }
+        Main.getMainScene().updateStatus("");
     }
 
     /**
@@ -100,7 +101,7 @@ public class Parser {
                     } else break;
                 }
 
-                if (type != EnumTokenType.W && sb.length() == 0) throw new TokenIndexException("Введена некорректная строка. Причина: некорректный индекс после токена. Индекс в строке: " + i); //Если
+                if (type != EnumTokenType.W && sb.length() == 0) throw new Exception("Введена некорректная строка. Причина: некорректный индекс после токена. Индекс в строке: " + i); //Если
                 else {
                     tokens.add(new Token(type, sb.toString()));
                 }
@@ -111,11 +112,25 @@ public class Parser {
 
         if (checkStartAndEnd) {
             if (!tokens.contains(new Token(EnumTokenType.Y, "н")))
-                throw new TokenCheckerException("Ошибка. В ЛСА не найден Yн");
+                throw new Exception("Ошибка. В ЛСА не найден Yн");
             if (!tokens.contains(new Token(EnumTokenType.Y, "к")))
-                throw new TokenCheckerException("Ошибка. В ЛСА не найден Yк");
+                throw new Exception("Ошибка. В ЛСА не найден Yк");
         }
 
         return tokens;
+    }
+
+    public static List<Token> getSpecificTokens(List<Token> tokens, EnumTokenType type, String[] bannedIndexes) {
+        List<Token> newTokens = new ArrayList<>();
+        for (Token token: tokens) {
+            if (token.getType().equals(type)) {
+                boolean hasBannedIndex = false;
+                for (String bannedIndex: bannedIndexes) {
+                    if (bannedIndex.equals(token.getIndex())) hasBannedIndex = true;
+                }
+                if (!hasBannedIndex) newTokens.add(token);
+            }
+        }
+        return newTokens;
     }
 }

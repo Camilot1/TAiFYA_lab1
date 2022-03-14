@@ -1,17 +1,15 @@
 package ru.samgtu.camilot.gui;
 
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.MenuButton;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
-import ru.samgtu.camilot.Controller;
-import ru.samgtu.camilot.GuiConstructor;
-import ru.samgtu.camilot.Modeller;
-import ru.samgtu.camilot.Parser;
+import javafx.util.Duration;
+import ru.samgtu.camilot.*;
 import ru.samgtu.camilot.enums.EnumCalculateType;
 import ru.samgtu.camilot.enums.EnumTokenType;
 import ru.samgtu.camilot.managers.FileManager;
@@ -19,6 +17,7 @@ import ru.samgtu.camilot.objects.Token;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class MainScene {
@@ -27,9 +26,15 @@ public class MainScene {
     private final Field field;
     private final AnchorPane root;
 
+    private ThreadModeller threadModeller;
+
+    private boolean waitForNewValue = false;
+    private boolean waitForNewValues = false;
+    private int waitedNewValuesSize = -1;
+
     private final TextField textTF;
     public final TextField inputTF;
-    public final TextField outputTF;
+    public final TextArea outputTA;
     private final MenuButton typeMB;
     private final MenuButton fileMB;
     private final Button nextStepBTN;
@@ -45,6 +50,7 @@ public class MainScene {
                 textTF = GuiConstructor.createTextField(10, 35, 420),
                 typeMB = GuiConstructor.createMenuButton(EnumCalculateType.getFirstType(), EnumCalculateType.getValuesAsList(), 440, 35, 100),
                 GuiConstructor.createButton(e -> calculate(textTF.getText()),"Обработать",  550, 35, 140),
+                GuiConstructor.createButton(e -> clear(),"Очистить",  550, 95, 140),
                 GuiConstructor.createLabel("Файл с данными:", 10, 70, 360),
                 fileMB = GuiConstructor.createMenuButton(getFiles(), 10, 95, 280),
                 GuiConstructor.createButton(e -> updateFiles(), "↻", 300, 95, 25),
@@ -53,12 +59,17 @@ public class MainScene {
                 GuiConstructor.createLabel("Входные данные:", 10, 175, 180),
                 GuiConstructor.createLabel("Выходные данные:", 210, 175, 180),
                 inputTF = GuiConstructor.createTextField("", 10, 200, 180),
-                outputTF = GuiConstructor.createTextField("", false,210, 200, 400),
-                nextStepBTN = GuiConstructor.createButton(e -> {}, "Следующий шаг", 10, 240, 180),
+                outputTA = GuiConstructor.createTextArea(false,210, 200, 400, 300),
+                nextStepBTN = GuiConstructor.createButton(e -> nextStep(), "Следующий шаг", 10, 240, 180),
+                GuiConstructor.createButton(e -> Main.getThreadModeller().play(), "PLAY", 0, 0, 50),
 
                 field.getRoot()
         );
 
+    }
+
+    public void setThreadModeller(ThreadModeller threadModeller) {
+        this.threadModeller = threadModeller;
     }
 
     /**
@@ -69,12 +80,45 @@ public class MainScene {
         nextStepBTN.setOnAction(e);
     }
 
+    public void nextStep() {
+        if (!waitForNewValue && !waitForNewValues) return;
+
+        if (waitForNewValue) {
+            try {
+                boolean bool = Validator.parseBoolean(inputTF.getText());
+                setNewValue(bool);
+                inputTF.setText("");
+                waitForNewValue = false;
+            } catch (Exception e) {
+                updateStatus("Введите корректное логическое значение для продолжения работы.");
+            }
+        } else if (waitForNewValues) {
+            try {
+                boolean[] booleans = Validator.parseBooleans(inputTF.getText(), waitedNewValuesSize);
+                setNewValues(booleans);
+                waitForNewValues = false;
+            } catch (Exception e) {
+                updateStatus("Введите N логических значений для продолжения работы.");
+            }
+        }
+    }
+
+    public void clear() {
+        textTF.clear();
+        inputTF.clear();
+        outputTA.clear();
+    }
+
     public void calculate(String text) {
+        if (waitForNewValue) return;
+        outputTA.setText("");
+
         try {
             List<Token> tokens = parseData(text);
 
             EnumCalculateType calculateType = EnumCalculateType.getEnumByType(typeMB.getText());
-            Modeller.model(tokens, calculateType);
+            assert calculateType != null;
+            threadModeller.addModelData(tokens, calculateType);
         } catch (Exception e) {
             e.printStackTrace();
             updateStatus(e.getMessage());
@@ -83,15 +127,7 @@ public class MainScene {
 
     public List<Token> parseData(String text) throws Exception {
         List<Token> tokens = Parser.parseTokenString(text, true);
-
-        for (Token token: tokens) {
-            if (token.getType() != EnumTokenType.W) Controller.addToken(token.toString(), token);
-        }
-
         Parser.checkTokenList(tokens);
-        for (Token token: tokens) {
-            System.out.println(token);
-        }
         return tokens;
     }
 
@@ -105,13 +141,6 @@ public class MainScene {
         List<String> list = FileManager.readList("data\\lsa\\" + fileMB.getText());
         if (list.size() > 0) {
             textTF.setText(list.get(0));
-            try {
-                List<Token> tokens = Parser.parseTokenString(list.get(0), true);
-                updateStatus("Введите " + Parser.getVarsCount(tokens) + " логических значения."); ;
-            } catch (Exception e) {
-                e.printStackTrace();
-                updateStatus(e.getMessage());
-            }
         }
     }
 
@@ -143,5 +172,39 @@ public class MainScene {
      */
     public void updateStatus(String message) {
         statusLabel.setText("Статус: " + message);
+    }
+
+    public void waitForNewValues(int size) {
+        updateStatus("Бесконечный цикл. Введите новые значения.");
+        waitForNewValues = true;
+        this.waitedNewValuesSize = size;
+    }
+
+    public void waitForNewValue(Token token) {
+        updateStatus("Введите одно логическое значение для токена " + token.toString());
+        waitForNewValue = true;
+    }
+
+    public void setNewValue(boolean value) {
+        Main.getThreadModeller().setNewValue(value, true);
+    }
+
+    public void setNewValues(boolean[] values) {
+        Main.getThreadModeller().setNewValues(values, true);
+    }
+
+    public boolean getWaitForNewValue() {
+        return waitForNewValue;
+    }
+    public boolean getWaitForNewValues() {
+        return waitForNewValues;
+    }
+
+    public void playThreadModeller() {
+        Main.getThreadModeller().play();
+    }
+
+    public Field getField() {
+        return field;
     }
 }

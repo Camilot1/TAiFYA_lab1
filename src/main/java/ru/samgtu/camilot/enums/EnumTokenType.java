@@ -7,7 +7,7 @@ public enum EnumTokenType {
     DOWN('D'),
     W('W');
 
-    private char ch;
+    private final char ch;
     EnumTokenType(char ch) {
         this.ch = ch;
     }

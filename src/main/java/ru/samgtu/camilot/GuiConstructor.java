@@ -169,6 +169,14 @@ public class GuiConstructor {
         textArea.setPrefSize(prefWidth, prefHeight);
         return textArea;
     }
+    public static TextArea createTextArea(boolean isEditable, double x, double y, double prefWidth, double prefHeight) {
+        TextArea textArea = new TextArea();
+        textArea.setLayoutX(x);
+        textArea.setLayoutY(y);
+        textArea.setPrefSize(prefWidth, prefHeight);
+        textArea.setEditable(isEditable);
+        return textArea;
+    }
 
     public static TextArea createTextArea(double x, double y, double prefWidth, double prefHeight, boolean wrapTextProperty) {
         TextArea textArea = new TextArea();

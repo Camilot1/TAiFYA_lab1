@@ -1,8 +1,5 @@
 package ru.samgtu.camilot;
 
-import ru.samgtu.camilot.exceptions.TokenCheckerException;
-import ru.samgtu.camilot.objects.Token;
-
 public class Validator {
 
     /**
@@ -54,27 +51,37 @@ public class Validator {
      * Валидация входного логического значения
      * @param ch входное значение
      * @return логическое значение
-     * @throws TokenCheckerException ошибка при некорректном значении
+     * @throws Exception ошибка при некорректном значении
      */
-    public static boolean parseBoolean(char ch) throws TokenCheckerException {
+    public static boolean parseBoolean(char ch) throws Exception {
         if (ch == '1') return true;
         else if (ch == '0') return false;
-        else throw new TokenCheckerException("Введено некорректное входное значение.");
+        else throw new Exception("Введено некорректное входное значение.");
     }
 
     /**
      * Валидация входного логического значения
      * @param s входное значение
      * @return логическое значение
-     * @throws TokenCheckerException ошибка при некорректном значении
+     * @throws Exception ошибка при некорректном значении
      */
-    public static boolean parseBoolean(String s) throws TokenCheckerException {
-        if (s.length() != 1) throw new TokenCheckerException("Введено некорректное входное значение.");
+    public static boolean parseBoolean(String s) throws Exception {
+        if (s.length() != 1) throw new Exception("Введено некорректное входное значение.");
 
         int value = Integer.parseInt(s);
 
         if (value == 1) return true;
         else if (value == 0) return false;
-        else throw new TokenCheckerException("Введено некорректное входное значение.");
+        else throw new Exception("Введено некорректное входное значение.");
+    }
+
+    public static boolean[] parseBooleans(String s, int size) throws Exception {
+        boolean[] booleans = new boolean[size];
+        for (int i = 0; i < size; i++) booleans[i] = parseBoolean(s.charAt(i));
+        return booleans;
+    }
+
+    public static int getIntFromBoolean(boolean value) {
+        return value ? 1: 0;
     }
 }

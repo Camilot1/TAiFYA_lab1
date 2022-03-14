@@ -5,8 +5,8 @@ import ru.samgtu.camilot.enums.EnumDirection;
 
 public class ScreenShot {
 
-    private Vec2d botPos;
-    private EnumDirection botDir;
+    private final Vec2d botPos;
+    private final EnumDirection botDir;
 
     public ScreenShot(Vec2d botPos, EnumDirection botDir) {
         this.botPos = new Vec2d(botPos);

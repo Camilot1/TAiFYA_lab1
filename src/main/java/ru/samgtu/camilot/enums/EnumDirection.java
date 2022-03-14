@@ -8,9 +8,9 @@ public enum EnumDirection {
     DOWN(2, '↓', new Vec2d(0, 1)),
     LEFT(3, '←', new Vec2d(-1, 0));
 
-    private int value;
-    private char directionChar;
-    private Vec2d positionDifference;
+    private final int value;
+    private final char directionChar;
+    private final Vec2d positionDifference;
     EnumDirection(int value, char directionChar, Vec2d positionDifference) {
         this.value = value;
         this.directionChar = directionChar;

@@ -8,7 +8,7 @@ public enum EnumCalculateType {
     STEP_BY_STEP("Пошаговый"),
     ALL("Перебор");
 
-    private String type;
+    private final String type;
     EnumCalculateType(String type) {
         this.type = type;
     }

@@ -8,6 +8,7 @@ import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.util.Duration;
 import ru.samgtu.camilot.GuiConstructor;
+import ru.samgtu.camilot.Main;
 import ru.samgtu.camilot.Parser;
 import ru.samgtu.camilot.enums.EnumDirection;
 import ru.samgtu.camilot.enums.EnumTileType;
@@ -22,20 +23,20 @@ import java.util.List;
 public class Field {
 
     private final AnchorPane root;
-    private final ScrollPane scrollPane;
     private final AnchorPane scrollRoot;
 
     private final MenuButton mbField;
     private final MenuButton mbPathLSA;
     private final Label labelStatus;
     private final TextField tfDelay;
+    private boolean isPlaying = false;
 
     private Bot bot;
     private Tile startTile;
     private Tile endTile;
     private Tile[][] tiles;
 
-    private static int counter = 0;
+    private List<Token> tokens;
 
     private static int currentScreenShot;
 
@@ -43,7 +44,7 @@ public class Field {
 
     public Field(double x, double y) {
         root = GuiConstructor.createAnchorPane(x, y, 840, 800);
-        scrollPane = GuiConstructor.createScrollPane(scrollRoot = new AnchorPane(), 0, 125, 750, 600);
+        ScrollPane scrollPane = GuiConstructor.createScrollPane(scrollRoot = new AnchorPane(), 0, 125, 750, 600);
         screenShots = new ArrayList<>();
 
         root.getChildren().addAll(
@@ -55,15 +56,16 @@ public class Field {
                 mbPathLSA = GuiConstructor.createMenuButton(getFiles("data\\pathLSA\\"), 85, 55, 220),
                 GuiConstructor.createButton(e -> update(mbPathLSA, "data\\pathLSA\\"), "↻", 315, 55, 25),
                 GuiConstructor.createButton(e -> start(), "Старт", 355, 15, 140),
+                GuiConstructor.createButton(e -> clear(), "Сброс", 355, 55, 140),
                 labelStatus = GuiConstructor.createLabel("Статус:", 15, 95, 700),
                 GuiConstructor.createLabel("Время одного кадра:", 510, 19, 140, Pos.CENTER),
                 tfDelay = GuiConstructor.createTextField("50", 655, 14, 60),
                 GuiConstructor.createLabel("ms", 720, 19, 30, Pos.CENTER),
-                GuiConstructor.createButton(e -> firstScreenShot(),"<<", 510, 60, 40),
-                GuiConstructor.createButton(e -> prevScreenShot(),"<", 560, 60, 40),
-                GuiConstructor.createButton(e -> play(), "p", 610, 60, 40),
-                GuiConstructor.createButton(e -> nextScreenShot(),">", 660, 60, 40),
-                GuiConstructor.createButton(e -> lastScreenShot(),">>", 710, 60, 40)
+                GuiConstructor.createButton(e -> firstScreenShot(),"<<", 510, 60, 45),
+                GuiConstructor.createButton(e -> prevScreenShot(),"<", 560, 60, 45),
+                GuiConstructor.createButton(e -> play(), "p", 610, 60, 45),
+                GuiConstructor.createButton(e -> nextScreenShot(false),">", 660, 60, 45),
+                GuiConstructor.createButton(e -> lastScreenShot(),">>", 710, 60, 45)
         );
 
         for (String item : getFiles("data\\field\\")) {
@@ -74,7 +76,6 @@ public class Field {
             });
             mbField.getItems().add(menuItem);
         }
-        //System.out.println(start(FileManager.readList("data\\lsa\\Алгоритм левой руки.data").get(0)));
 
     }
 
@@ -97,12 +98,14 @@ public class Field {
     }
 
     private void firstScreenShot() {
+        if (isPlaying) return;
         if (screenShots == null || screenShots.size() == 0) return;
         currentScreenShot = 0;
         bot.loadScreenShot(screenShots.get(currentScreenShot));
     }
 
     private void prevScreenShot() {
+        if (isPlaying) return;
         if (currentScreenShot > 0) currentScreenShot--;
         if (screenShots == null || screenShots.size() <= currentScreenShot) return;
         bot.loadScreenShot(screenShots.get(currentScreenShot));
@@ -110,32 +113,31 @@ public class Field {
 
     private void play() {
         firstScreenShot();
-        Timeline timeline = new Timeline (
-                new KeyFrame(
-                        Duration.millis(getPlayFrameDelay()), //1000 мс * 60 сек = 1 мин
-                        ae -> {
-                            nextScreenShot();
-                        }
-                )
-        );
+        int[] counter = new int[1];
+        Timeline timeline = new Timeline (new KeyFrame(Duration.millis(getPlayFrameDelay()), ae -> {
+            nextScreenShot(true);
+            counter[0]--;
+            if (counter[0] == 0) isPlaying = false;
+            System.out.println(counter[0]);
+        }));
         timeline.setCycleCount(screenShots.size()); //Ограничим число повторений
+        counter[0] = screenShots.size();
+        isPlaying = true;
         timeline.play();
     }
 
-    private void nextScreenShot() {
+    private void nextScreenShot(boolean ignoreIsPlaying) {
+        if (!ignoreIsPlaying) if (isPlaying) return;
         if (screenShots == null) return;
         if (currentScreenShot + 1 < screenShots.size()) currentScreenShot++;
-        bot.loadScreenShot(screenShots.get(currentScreenShot));
+        if (screenShots.size() > 0) bot.loadScreenShot(screenShots.get(currentScreenShot));
     }
 
     private void lastScreenShot() {
+        if (isPlaying) return;
         if (screenShots == null || screenShots.size() == 0) return;
         currentScreenShot = screenShots.size()-1;
         bot.loadScreenShot(screenShots.get(currentScreenShot));
-    }
-
-    public void makeScreenShot() {
-        screenShots.add(new ScreenShot(bot.getPosition(), bot.getDirection()));
     }
 
     private int getPlayFrameDelay() {
@@ -151,30 +153,51 @@ public class Field {
     }
 
     private void start() {
+        if (isPlaying) return;
+
+
         updateStatus("");
         if (!FileManager.isFileExist("data\\field\\" + mbField.getText()) || !FileManager.isFileExist("data\\pathLSA\\" + mbPathLSA.getText())) {
             updateStatus("Пожалуйста, выберите корректные файлы лабиринта и алгоритма поиска пути!");
             return;
         }
 
+        if (mbField.getText().equals("")) {
+            updateStatus("Пожалуйста, выберите файл с лабиринтом.");
+            return;
+        }
+        if (mbPathLSA.getText().equals("")) {
+            updateStatus("Пожалуйста, выберите файл с ЛСА.");
+            return;
+        }
+
         List<String> data =  FileManager.readList("data\\pathLSA\\" + mbPathLSA.getText());
         if (data.size() == 0) {
-            updateStatus("В файле выбанного лабиринта отсутствуют данные!");
+            updateStatus("В файле выбранной ЛСА отсутствуют данные!");
             return;
         }
 
 
-        screenShots.clear();
-        makeScreenShot();
+        clear();
         try {
-            List<Token> list = Parser.parseTokenString(data.get(0), true);
+            tokens = Parser.parseTokenString(data.get(0), true);
+            bot.setTokens(tokens);
+            bot.setScreenShots(screenShots);
+            bot.makeScreenShot();
 
-            bot.nextStep(list);
-            if (bot.getPosition().equals(startTile.getPosition())) updateStatus("Путь не найден. Бот вернулся в начало");
-            else if (bot.getPosition().equals(endTile.getPosition())) updateStatus("Путь найден. Вы можете посмотреть повтор прохождения лабиринта с помощью кнопок справа.");
+            bot.makeFirstStep();
+
         } catch (Exception e) {
             updateStatus(e.getMessage());
         }
+    }
+
+    public void clear() {
+        if (isPlaying) return;
+        String filePath = "data\\field\\" + mbField.getText();
+        loadFieldFromFile(filePath);
+        screenShots.clear();
+        updateStatus("Очищено.");
     }
 
     /**
@@ -186,6 +209,13 @@ public class Field {
         updateFieldSize(data);
         loadTiles(data);
         loadBot();
+    }
+
+    public void hideBot() {
+        if (bot != null) scrollRoot.getChildren().remove(bot.getRoot());
+    }
+    public void showBot() {
+        if (bot != null) scrollRoot.getChildren().add(bot.getRoot());
     }
 
     /**
@@ -278,6 +308,14 @@ public class Field {
         return tiles;
     }
 
+    public Tile getStartTile() {
+        return startTile;
+    }
+
+    public Tile getEndTile() {
+        return endTile;
+    }
+
     public AnchorPane getRoot() {
         return root;
     }
@@ -288,6 +326,10 @@ public class Field {
      */
     public void updateStatus(String message) {
         labelStatus.setText("Статус: " + message);
+    }
+
+    public Bot getBot() {
+        return bot;
     }
 
 }

@@ -6,7 +6,7 @@ import java.util.Objects;
 
 public class Token {
 
-    private EnumTokenType type;
+    private final EnumTokenType type;
     private String index;
 
     public Token(EnumTokenType type, String index) {

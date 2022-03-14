@@ -7,8 +7,8 @@ public enum EnumTileType {
     WALL('1', "#545454"),
     BOT('B', "#FF06F5");
 
-    private char ch;
-    private String color;
+    private final char ch;
+    private final String color;
     EnumTileType(char ch, String color) {
         this.ch = ch;
         this.color = color;
