@@ -106,6 +106,7 @@ public class ThreadModeller extends Thread {
         switch (type) {
             case COMMON:
                 if (bot != null) updateBooleans();
+                else waitForNewCommonValues(formalToRealIndexMap.keySet().size());
                 break;
             case STEP_BY_STEP:
                 break;
@@ -181,6 +182,7 @@ public class ThreadModeller extends Thread {
 
                     switch (type) {
                         case COMMON:
+                            System.out.println("    Проверяю условие " + currentToken.toString() + ";" + Arrays.toString(boolValues));
                             if (xTokenHistory.contains(currentToken)) {
                                 if (bot == null) waitForNewValues(formalToRealIndexMap.keySet().size());
                                 else {
@@ -191,6 +193,7 @@ public class ThreadModeller extends Thread {
                             } else {
                                 if (boolValues[formalToRealIndexMap.get(currentToken.getIndex())]) {
                                     useUpArrow = true;
+                                    System.out.println("    Выполнено условие " + currentToken.toString());
                                 }
                             }
                             xTokenHistory.add(currentToken);
@@ -285,7 +288,7 @@ public class ThreadModeller extends Thread {
         if (bot != null) {
             boolValues = bot.checkDirections();
         } else {
-            updateStatus("Wait for booleans");
+            updateStatus("Пожалуйста, ");
             boolValues = null;
             instantPause();
         }
@@ -316,6 +319,10 @@ public class ThreadModeller extends Thread {
         isBotUpdated = true;
     }
 
+    private void waitForNewCommonValues(int size) {
+        doJavaFXEvent(e -> mainScene.waitForNewCommonValues(size));
+        instantPause();
+    }
     private void waitForNewValues(int size) {
         doJavaFXEvent(e -> mainScene.waitForNewValues(size));
         instantPause();

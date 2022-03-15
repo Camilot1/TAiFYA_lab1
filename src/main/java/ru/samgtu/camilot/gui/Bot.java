@@ -17,7 +17,7 @@ public class Bot {
 
     private final Field field;
     private EnumDirection direction;
-    private Vec2d position;
+    private volatile Vec2d position;
     private final AnchorPane root;
     private final Label labelDirection;
 
@@ -97,7 +97,7 @@ public class Bot {
     }
 
     public void executeCommand(Token token) throws Exception {
-        System.out.println("  Выполняю команду " + token.toString());
+        System.out.println("  Начинаю выполнение команды " + token.toString());
         boolean movedForward = false;
         switch (token.toString()) {
             case "Y1":

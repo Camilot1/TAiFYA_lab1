@@ -174,6 +174,12 @@ public class MainScene {
         statusLabel.setText("Статус: " + message);
     }
 
+    public void waitForNewCommonValues(int size) {
+        updateStatus("Пожалуйста, введите " + size + " логических значений.");
+        waitForNewValues = true;
+        this.waitedNewValuesSize = size;
+    }
+
     public void waitForNewValues(int size) {
         updateStatus("Бесконечный цикл. Введите новые значения.");
         waitForNewValues = true;

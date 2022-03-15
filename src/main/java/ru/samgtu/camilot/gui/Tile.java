@@ -15,7 +15,7 @@ public class Tile {
     private EnumTileType type;
     private Rectangle tile;
 
-    private Vec2d position;
+    private volatile Vec2d position;
 
     public Tile(EnumTileType type, Vec2d position) {
         this.type = type;
