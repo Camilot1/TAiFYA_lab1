@@ -44,12 +44,13 @@ public class Bot extends ColoredXYGuiObject {
     }
 
     public void start(List<Token> tokens) throws Exception {
-        BooleanPackage booleanPackage = new BooleanPackage(checkDirections());
+        BooleanPackage booleanPackage = new BooleanPackage(EnumCalculateType.BOT, checkDirections());
         booleanPackage.setBot(this);
-        TokenPackage tokenPackage = new TokenPackage(EnumCalculateType.BOT);
+        booleanPackage.setGuiObject(null, null, Main.fieldTab.getLabelStatus());
+        TokenPackage tokenPackage = new TokenPackage(EnumCalculateType.BOT, booleanPackage);
         tokenPackage.setBot(this);
 
-        modeller.model(tokens, booleanPackage, tokenPackage);
+        modeller.model(tokens, booleanPackage, tokenPackage, false);
     }
 
     public List<ScreenShot> getScreenShots() {

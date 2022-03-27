@@ -1,8 +1,13 @@
 package ru.samgtu.camilot.tabs;
 
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
+import javafx.util.Duration;
 import ru.samgtu.camilot.GuiConstructor;
 import ru.samgtu.camilot.Parser;
 import ru.samgtu.camilot.gui.Field;
@@ -17,9 +22,7 @@ import java.util.List;
 
 public class FieldTab extends Tab {
 
-    private final AnchorPane root;
-
-    private final Field field;
+     private final Field field;
 
     private final MenuButton mbField;
     private final MenuButton mbPathLSA;
@@ -29,6 +32,7 @@ public class FieldTab extends Tab {
     public FieldTab() {
         super("Лабиринт");
         setClosable(false);
+        AnchorPane root;
         setContent(root = new AnchorPane());
 
         field = new Field(this, new DoubleVector2(10, 130), new DoubleVector2(700, 700));
@@ -150,6 +154,10 @@ public class FieldTab extends Tab {
 
     public void updateStatus(String message) {
         System.out.println(message);
+    }
+
+    public Label getLabelStatus() {
+        return labelStatus;
     }
 
 }

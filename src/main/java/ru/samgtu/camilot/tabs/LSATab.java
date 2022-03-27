@@ -1,7 +1,12 @@
 package ru.samgtu.camilot.tabs;
 
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
+import javafx.util.Duration;
 import ru.samgtu.camilot.GuiConstructor;
 import ru.samgtu.camilot.Main;
 import ru.samgtu.camilot.Parser;
@@ -9,7 +14,10 @@ import ru.samgtu.camilot.Validator;
 import ru.samgtu.camilot.enums.EnumCalculateType;
 import ru.samgtu.camilot.enums.EnumPath;
 import ru.samgtu.camilot.managers.FileManager;
+import ru.samgtu.camilot.objects.BooleanPackage;
+import ru.samgtu.camilot.objects.Modeller;
 import ru.samgtu.camilot.objects.Token;
+import ru.samgtu.camilot.objects.TokenPackage;
 
 import java.io.File;
 import java.util.List;
@@ -17,6 +25,8 @@ import java.util.List;
 public class LSATab extends Tab {
 
     private final AnchorPane root;
+
+    private final Modeller modeller;
 
     private final TextField tfText;
     public final TextField tfInput;
@@ -26,10 +36,15 @@ public class LSATab extends Tab {
     private final Button btnNextStep;
     private final Label labelStatus;
 
+    private volatile boolean isModelling;
+
     public LSATab() {
         super("Моделирование ЛСА");
         setClosable(false);
         setContent(root = new AnchorPane());
+
+        modeller = new Modeller();
+        modeller.start();
 
         root.getChildren().addAll(
                 GuiConstructor.createLabel("Уравнение:", 10, 10, 360),
@@ -55,14 +70,40 @@ public class LSATab extends Tab {
     }
 
     private void calculate(String lsa) {
-        try {
-            String validatedLSA = Validator.validateString(lsa);
-            List<Token> tokens = Parser.parseTokenString(validatedLSA, true);
+        if (!modeller.needToModel) {
+            try {
+                taOutput.setText("");
+                String validatedLSA = Validator.validateString(lsa);
+                List<Token> tokens = Parser.parseTokenString(validatedLSA, true);
 
-            
-        } catch (Exception e) {
-            e.printStackTrace();
-            updateStatus(e.getMessage());
+                EnumCalculateType type = EnumCalculateType.getEnumByType(mbType.getText());
+
+                BooleanPackage booleanPackage = new BooleanPackage(type);
+                booleanPackage.setGuiObject(tfInput, btnNextStep, labelStatus);
+                TokenPackage tokenPackage = new TokenPackage(type, booleanPackage);
+                tokenPackage.setTAOutput(taOutput);
+
+                boolean checkForLoop = false;
+
+                if (type == null) return;
+                switch (type) {
+                    case COMMON:
+                        checkForLoop = true;
+                        booleanPackage.setIsWaitedForCommonValues(true);
+                        break;
+                    case ALL:
+                        checkForLoop = true;
+                        booleanPackage.setMaxBitsCount(Modeller.getFormalToRealIndexMap(tokens).keySet().size());
+                        break;
+                }
+
+                modeller.setupObjects(tokens, booleanPackage, tokenPackage, checkForLoop);
+
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                updateStatus(e.getMessage());
+            }
         }
     }
 
@@ -91,4 +132,5 @@ public class LSATab extends Tab {
     private void updateStatus(String message) {
         labelStatus.setText("Статус: " + message);
     }
+
 }

@@ -70,13 +70,18 @@ public class Validator {
      * @throws Exception ошибка при некорректном значении
      */
     public static boolean parseBoolean(String s) throws Exception {
-        if (s.length() != 1) throw new Exception("Введено некорректное входное значение.");
+        if (s.length() != 1) throw new Exception("Ошибка. Введено больше одного символа.");
 
         if (s.charAt(0) == '1') return true;
         else if (s.charAt(0) == '0') return false;
-        else throw new Exception("Введено некорректное входное значение.");
+        else throw new Exception("Введено некорректное логическое значение.");
     }
 
+    public static boolean[] parseBooleans(String s) throws Exception {
+        boolean[] booleans = new boolean[s.length()];
+        for (int i = 0; i < s.length(); i++) booleans[i] = parseBoolean(s.charAt(i));
+        return booleans;
+    }
     public static boolean[] parseBooleans(String s, int size) throws Exception {
         boolean[] booleans = new boolean[size];
         for (int i = 0; i < size; i++) booleans[i] = parseBoolean(s.charAt(i));

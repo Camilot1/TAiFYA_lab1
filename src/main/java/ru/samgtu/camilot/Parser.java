@@ -55,7 +55,6 @@ public class Parser {
                 else xList.add(token.getIndex());
             }
         }
-        Main.getMainScene().updateStatus("");
     }
 
     /**

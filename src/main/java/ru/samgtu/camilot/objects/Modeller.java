@@ -1,11 +1,21 @@
 package ru.samgtu.camilot.objects;
 
+import ru.samgtu.camilot.Main;
+import ru.samgtu.camilot.enums.EnumCalculateType;
 import ru.samgtu.camilot.enums.EnumTokenType;
+import ru.samgtu.camilot.tabs.LSATab;
 
 import java.util.*;
 
 public class Modeller extends Thread {
     private volatile boolean play = true;
+
+    public volatile boolean needToModel = false;
+
+    private volatile List<Token> tokens;
+    private volatile BooleanPackage booleanPackage;
+    private volatile TokenPackage tokenPackage;
+    private volatile boolean checkForLoop;
 
     public Modeller() {
 
@@ -15,7 +25,31 @@ public class Modeller extends Thread {
     public void run() {
         while (!isInterrupted()) {
             checkPause();
+
+            if (needToModel) {
+                try {
+                    model(tokens, booleanPackage, tokenPackage, checkForLoop);
+                    if (booleanPackage.getType() == EnumCalculateType.ALL) {
+                        if (booleanPackage.getStep() >= booleanPackage.getMaxStep()) stopModelling();
+                        else booleanPackage.nextBooleans();
+                    } else stopModelling();
+                } catch (RuntimeException re) {
+                    tokenPackage.infiniteCycle(booleanPackage.getBooleans());
+                    booleanPackage.nextBooleans();
+                    if (booleanPackage.getStep() >=  booleanPackage.getMaxStep()) stopModelling();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    stopModelling();
+                }
+            }
         }
+    }
+
+    private synchronized void stopModelling() {
+        needToModel = false;
+        tokens = null;
+        booleanPackage = null;
+        tokenPackage = null;
     }
 
     public synchronized void play() {
@@ -41,28 +75,59 @@ public class Modeller extends Thread {
         }
     }
 
-    public void model(List<Token> tokens, BooleanPackage booleanPackage, TokenPackage tokenPackage) throws Exception {
+    public List<Token> getTokens() {
+        return tokens;
+    }
+
+    public synchronized void setupObjects(List<Token> tokens, BooleanPackage booleanPackage, TokenPackage tokenPackage, boolean checkForLoop) {
+        if (needToModel) return;
+        this.tokens = tokens;
+        this.booleanPackage = booleanPackage;
+        this.tokenPackage = tokenPackage;
+        this.checkForLoop = checkForLoop;
+        needToModel = true;
+    }
+
+    public synchronized void model(List<Token> tokens, BooleanPackage booleanPackage, TokenPackage tokenPackage, boolean checkForLoop) throws Exception {
         Map<String, Integer> formalToRealIndexMap = getFormalToRealIndexMap(tokens);
         Set<Token> xTokenHistory = new HashSet<>(); //История логических токенов. Нужна для пресечения бесконечной прогонки
 
         boolean useUpArrow = false;
-        int tokenIndex = 0, step = 0, maxBitsCount = 0, maxStep = 0;
+        int tokenIndex = 0;
 
         while (true) {
             Token token = tokens.get(tokenIndex);
             switch (token.getType()) {
                 case Y:
                     if (tokenPackage.addToken(token)) booleanPackage.checkBot();
-                    if (token.getIndex().equals("к")) return;
+                    if (token.getIndex().equals("к")) {
+                        booleanPackage.updateStatus("Выполнение окончено.");
+                        return;
+                    }
                     break;
                 case X:
-                    //if (checkForLoop) {}
-                    if (booleanPackage.getBoolean(formalToRealIndexMap.get(token.getIndex()))) useUpArrow = true;
+                    if (checkForLoop) {
+                        if (xTokenHistory.contains(token)) throw new RuntimeException("Бесконечный цикл.");
+                        else xTokenHistory.add(token);
+                    }
+                    if (booleanPackage.isStepByStepMode()) {
+                        booleanPackage.waitForNextStep(this);
+                        instantPause();
+
+                        if (booleanPackage.getBoolean(0)) useUpArrow = true;
+                    } else if (booleanPackage.isWaitedForCommonValues()) {
+                        booleanPackage.setIsWaitedForCommonValues(false);
+                        booleanPackage.waitForCommonValues(this);
+                        instantPause();
+                        if (booleanPackage.getBoolean(formalToRealIndexMap.get(token.getIndex()))) useUpArrow = true;
+                    } else if (booleanPackage.getBoolean(formalToRealIndexMap.get(token.getIndex()))) {
+                        useUpArrow = true;
+                    }
                     break;
                 case UP:
                     if (useUpArrow) { //Если должен перейти по UP-стрелке
                         tokenIndex = getDownArrowTokenByIndex(tokens, token.getIndex()); //то переходит на DOWN-стрелку
-                        if (tokenIndex == -1) System.err.println("//TO-DO. Не нашёл DOWN-ARROW с указанным индексом.");
+                        if (tokenIndex == -1) throw new Exception("Не нашёл стрелку вниз с указанным индексом.");
                         useUpArrow = false;
                     }
                     break;
@@ -83,7 +148,7 @@ public class Modeller extends Thread {
      * @param tokens список всех токенов
      * @return мапа с реальными индексами X-токенов по ключу-формальному-индекску-токена
      */
-    public Map<String, Integer> getFormalToRealIndexMap(List<Token> tokens) {
+    public static Map<String, Integer> getFormalToRealIndexMap(List<Token> tokens) {
         Map<String, Integer> formalToRealIndexMap = new LinkedHashMap<>();
         Map<Integer, Token> tempIndexMap = new HashMap<>();
         List<Token> xTokens = new ArrayList<>();

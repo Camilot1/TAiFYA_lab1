@@ -115,11 +115,11 @@ public class Field {
     public void loadBot() {
         if (bot == null) {
             bot = new Bot(this, EnumDirection.RIGHT, startXYIndexes);
+            scrollRoot.getChildren().add(bot.getRoot());
         } else {
             bot.setDirection(EnumDirection.RIGHT);
             bot.setPosition(startXYIndexes);
         }
-        scrollRoot.getChildren().add(bot.getRoot());
     }
 
     public void firstScreenShot() {
