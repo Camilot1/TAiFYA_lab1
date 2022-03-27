@@ -7,12 +7,23 @@ import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
+import ru.samgtu.camilot.ulits.vectors.DoubleVector2;
 
+import java.io.File;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
 public class GuiConstructor {
+
+    public static AnchorPane createAnchorPane(DoubleVector2 position, DoubleVector2 size) {
+        AnchorPane anchorPane = new AnchorPane();
+        anchorPane.setLayoutX(position.x);
+        anchorPane.setLayoutY(position.y);
+        anchorPane.setPrefWidth(size.x);
+        anchorPane.setPrefHeight(size.y);
+        return anchorPane;
+    }
 
     public static AnchorPane createAnchorPane(double x, double y, double width, double height) {
         AnchorPane anchorPane = new AnchorPane();
@@ -23,6 +34,15 @@ public class GuiConstructor {
         return anchorPane;
     }
 
+    public static ScrollPane createScrollPane(AnchorPane scrollRoot, DoubleVector2 position, DoubleVector2 size) {
+        ScrollPane scrollPane = new ScrollPane();
+        scrollPane.setLayoutX(position.x);
+        scrollPane.setLayoutY(position.y);
+        scrollPane.setPrefViewportWidth(size.x);
+        scrollPane.setPrefViewportHeight(size.y);
+        scrollPane.setContent(scrollRoot);
+        return scrollPane;
+    }
     public static ScrollPane createScrollPane(AnchorPane scrollRoot, double x, double y, double width, double height) {
         ScrollPane scrollPane = new ScrollPane();
         scrollPane.setLayoutX(x);
@@ -42,11 +62,28 @@ public class GuiConstructor {
         return scrollRoot;
     }
 
+    public static Label createLabel(String text, DoubleVector2 position, double prefWidth) {
+        Label label = new Label(text);
+        label.setLayoutX(position.x);
+        label.setLayoutY(position.y);
+        label.setPrefWidth(prefWidth);
+        return label;
+    }
+
     public static Label createLabel(String text, double x, double y, double prefWidth) {
         Label label = new Label(text);
         label.setLayoutX(x);
         label.setLayoutY(y);
         label.setPrefWidth(prefWidth);
+        return label;
+    }
+
+    public static Label createLabel(String text, DoubleVector2 position, double prefWidth, Pos pos) {
+        Label label = new Label(text);
+        label.setLayoutX(position.x);
+        label.setLayoutY(position.y);
+        label.setPrefWidth(prefWidth);
+        label.setAlignment(pos);
         return label;
     }
 
@@ -70,6 +107,16 @@ public class GuiConstructor {
     }
 
 
+    public static Label createLabel(String text, DoubleVector2 position, DoubleVector2 size, Pos pos) {
+        Label label = new Label(text);
+        label.setLayoutX(position.x);
+        label.setLayoutY(position.y);
+        label.setPrefWidth(size.x);
+        label.setPrefHeight(size.x);
+        label.setAlignment(pos);
+        return label;
+    }
+
     public static Button createButton(double x, double y, double prefWidth) {
         Button button = new Button();
         button.setLayoutX(x);
@@ -92,6 +139,15 @@ public class GuiConstructor {
         button.setOnAction(e);
         button.setLayoutX(x);
         button.setLayoutY(y);
+        button.setPrefWidth(prefWidth);
+        return button;
+    }
+
+    public static Button createButton(EventHandler<ActionEvent> e, String text, DoubleVector2 position, double prefWidth) {
+        Button button = new Button(text);
+        button.setOnAction(e);
+        button.setLayoutX(position.x);
+        button.setLayoutY(position.y);
         button.setPrefWidth(prefWidth);
         return button;
     }
@@ -187,6 +243,15 @@ public class GuiConstructor {
         return textArea;
     }
 
+    public static Rectangle createRectangle(String color, DoubleVector2 position, DoubleVector2 size) {
+        Rectangle rectangle = new Rectangle();
+        rectangle.setLayoutX(position.x);
+        rectangle.setLayoutY(position.y);
+        rectangle.setWidth(size.x);
+        rectangle.setHeight(size.y);
+        if (color != null) rectangle.setFill(Paint.valueOf(color));
+        return rectangle;
+    }
     public static Rectangle createRectangle(String color, double x, double y, double width, double height) {
         Rectangle rectangle = new Rectangle();
         rectangle.setLayoutX(x);
@@ -197,6 +262,15 @@ public class GuiConstructor {
         return rectangle;
     }
 
+    public static Rectangle createRectangle(Paint color, DoubleVector2 position, DoubleVector2 size) {
+        Rectangle rectangle = new Rectangle();
+        rectangle.setLayoutX(position.x);
+        rectangle.setLayoutY(position.y);
+        rectangle.setWidth(size.x);
+        rectangle.setHeight(size.y);
+        if (color != null) rectangle.setFill(color);
+        return rectangle;
+    }
     public static Rectangle createRectangle(Paint color, double x, double y, double width, double height) {
         Rectangle rectangle = new Rectangle();
         rectangle.setLayoutX(x);
@@ -207,6 +281,20 @@ public class GuiConstructor {
         return rectangle;
     }
 
+    public static MenuButton createMenuButton(File[] files, double x, double y, double prefWidth) {
+        MenuButton menuButton = new MenuButton();
+
+        for (File file : files) {
+            MenuItem menuItem = new MenuItem(file.getName());
+            menuItem.setOnAction(e -> menuButton.setText(menuItem.getText()));
+            menuButton.getItems().add(menuItem);
+        }
+
+        menuButton.setLayoutX(x);
+        menuButton.setLayoutY(y);
+        menuButton.setPrefWidth(prefWidth);
+        return menuButton;
+    }
     public static MenuButton createMenuButton(String text, List<String> list, double x, double y, double prefWidth) {
         MenuButton menuButton = new MenuButton(text);
 

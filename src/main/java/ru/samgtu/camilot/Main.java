@@ -1,15 +1,17 @@
 package ru.samgtu.camilot;
 
 import javafx.application.Application;
+import javafx.scene.Scene;
+import javafx.scene.control.TabPane;
 import javafx.stage.Stage;
 import ru.samgtu.camilot.gui.MainScene;
+import ru.samgtu.camilot.tabs.FieldTab;
+import ru.samgtu.camilot.tabs.LSATab;
 
 public class Main extends Application {
 
     private static MainScene mainScene;
     private static ThreadModeller threadModeller;
-
-    private static String status;
 
     @Override
     public void start(Stage primaryStage) {
@@ -18,16 +20,19 @@ public class Main extends Application {
         primaryStage.setWidth(1600);
         primaryStage.setHeight(800);
 
-        primaryStage.setScene(mainScene.getScene());
+        TabPane tabPane = new TabPane();
+        tabPane.getTabs().addAll(
+                new LSATab(),
+                new FieldTab()
+        );
+
+        primaryStage.setScene(new Scene(tabPane));
         primaryStage.show();
 
     }
 
     public static void main(String[] args) {
         mainScene = new MainScene();
-        threadModeller = new ThreadModeller(mainScene);
-        mainScene.setThreadModeller(threadModeller);
-        threadModeller.start();
         launch();
     }
 
@@ -35,15 +40,4 @@ public class Main extends Application {
         return mainScene;
     }
 
-    public static void updateStatus(String message) {
-        status = message;
-    }
-
-    public static String getStatus() {
-        return status;
-    }
-
-    public static ThreadModeller getThreadModeller() {
-        return threadModeller;
-    }
 }

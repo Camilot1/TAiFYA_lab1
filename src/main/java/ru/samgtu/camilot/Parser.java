@@ -1,7 +1,6 @@
 package ru.samgtu.camilot;
 
 import ru.samgtu.camilot.enums.EnumTokenType;
-import ru.samgtu.camilot.gui.MainScene;
 import ru.samgtu.camilot.objects.Token;
 
 import java.util.ArrayList;
@@ -126,7 +125,10 @@ public class Parser {
             if (token.getType().equals(type)) {
                 boolean hasBannedIndex = false;
                 for (String bannedIndex: bannedIndexes) {
-                    if (bannedIndex.equals(token.getIndex())) hasBannedIndex = true;
+                    if (bannedIndex.equals(token.getIndex())) {
+                        hasBannedIndex = true;
+                        break;
+                    }
                 }
                 if (!hasBannedIndex) newTokens.add(token);
             }

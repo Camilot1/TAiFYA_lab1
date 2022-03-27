@@ -35,14 +35,18 @@ public class Validator {
      */
     public static char validateChar(char ch) {
         switch (ch) {
-            case 'У': //русская в английскую
-            case 'у': return 'Y'; //русская в английскую
-            case 'Н': //русская в русскую
-            case 'H': return 'н'; //английская в русскую
-            case 'w': return 'W';
-            case 'u': return 'U';
-            case 'd': return 'D';
-            case 'k': return 'к';
+            case 'У': //русская большая в английскую большую
+            case 'у': //русская малая в английскую большую
+            case 'y': return 'Y'; //английская малая в английскую большую
+            case 'H': //английская большая в русскую малую
+            case 'h': //английская малая в русскую малую
+            case 'Н': return 'н'; //русская большая в русскую малую
+            case 'w': return 'W'; //английская малая в английскую большую
+            case 'u': return 'U'; //английская малая в английскую большую
+            case 'd': return 'D'; //английская малая в английскую большую
+            case 'K': //английская большая в русскую малую
+            case 'k': //английская малая в русскую малую
+            case 'К': return 'к'; //русская большая в русскую малую
             default: return ch;
         }
     }
@@ -68,10 +72,8 @@ public class Validator {
     public static boolean parseBoolean(String s) throws Exception {
         if (s.length() != 1) throw new Exception("Введено некорректное входное значение.");
 
-        int value = Integer.parseInt(s);
-
-        if (value == 1) return true;
-        else if (value == 0) return false;
+        if (s.charAt(0) == '1') return true;
+        else if (s.charAt(0) == '0') return false;
         else throw new Exception("Введено некорректное входное значение.");
     }
 

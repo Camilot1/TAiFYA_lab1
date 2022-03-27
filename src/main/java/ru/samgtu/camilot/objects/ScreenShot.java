@@ -1,23 +1,23 @@
 package ru.samgtu.camilot.objects;
 
-import com.sun.javafx.geom.Vec2d;
 import ru.samgtu.camilot.enums.EnumDirection;
+import ru.samgtu.camilot.ulits.vectors.IntVector2;
 
 public class ScreenShot {
 
-    private final Vec2d botPos;
-    private final EnumDirection botDir;
+    private final IntVector2 position;
+    private final EnumDirection direction;
 
-    public ScreenShot(Vec2d botPos, EnumDirection botDir) {
-        this.botPos = new Vec2d(botPos);
-        this.botDir = botDir;
+    public ScreenShot(IntVector2 position, EnumDirection direction) {
+        this.position = new IntVector2(position);
+        this.direction = direction;
     }
 
-    public Vec2d getBotPos() {
-        return botPos;
+    public IntVector2 getPosition() {
+        return position;
     }
 
-    public EnumDirection getBotDir() {
-        return botDir;
+    public EnumDirection getDirection() {
+        return direction;
     }
 }

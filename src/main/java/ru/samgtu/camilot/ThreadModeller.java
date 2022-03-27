@@ -7,7 +7,7 @@ import javafx.event.EventHandler;
 import javafx.util.Duration;
 import ru.samgtu.camilot.enums.EnumCalculateType;
 import ru.samgtu.camilot.enums.EnumTokenType;
-import ru.samgtu.camilot.gui.Bot;
+import ru.samgtu.camilot.objects.Bot;
 import ru.samgtu.camilot.gui.MainScene;
 import ru.samgtu.camilot.objects.Token;
 
@@ -36,7 +36,7 @@ public class ThreadModeller extends Thread {
         while (!isInterrupted()) {
             checkPause();
             if (needToModel) {
-                model(tokens, type);
+                //model(tokens, type);
                 needToModel = false;
             }
         }
@@ -55,6 +55,7 @@ public class ThreadModeller extends Thread {
         checkPause();
     }
 
+    /*
     private synchronized void checkBotUpdated() {
         if (isWaitedForBotUpdate) {
             if (isBotUpdated) {
@@ -64,6 +65,8 @@ public class ThreadModeller extends Thread {
             }
         }
     }
+
+     */
 
     private synchronized void checkPause() {
         while (!play) {
@@ -75,6 +78,7 @@ public class ThreadModeller extends Thread {
         }
     }
 
+    /*
     public synchronized void addModelData(List<Token> tokens, EnumCalculateType type) {
 
         this.tokens = tokens;
@@ -93,7 +97,10 @@ public class ThreadModeller extends Thread {
         needToModel = true;
         play();
     }
+     */
 
+
+    /*
     public void model(List<Token> tokens, EnumCalculateType type) {
         Map<String, Integer> formalToRealIndexMap = getFormalToRealIndexMap(tokens);
         Set<Token> xTokenHistory = new HashSet<>(); //История логических токенов. Нужна для пресечения бесконечной прогонки
@@ -246,6 +253,8 @@ public class ThreadModeller extends Thread {
         }
     }
 
+     */
+
     /**
      * Метод, возвращащий мапу с ключами - формальными индексами X-токенов и значениями реальных индексов в массиве
      * @param tokens список всех токенов
@@ -284,15 +293,18 @@ public class ThreadModeller extends Thread {
         return -1;
     }
 
+    /*
     public void updateBooleans() {
         if (bot != null) {
-            boolValues = bot.checkDirections();
+            //boolValues = bot.checkDirections();
         } else {
             updateStatus("Пожалуйста, ");
             boolValues = null;
             instantPause();
         }
     }
+
+     */
 
     private boolean[] getBinaryArray(int number, int base) {
         final boolean[] array = new boolean[base];
@@ -304,6 +316,7 @@ public class ThreadModeller extends Thread {
         return array;
     }
 
+    /*
     public synchronized void setNewValue(boolean boolValue, boolean playAfter) {
         this.boolValue = boolValue;
         if (playAfter) play();
@@ -343,7 +356,6 @@ public class ThreadModeller extends Thread {
             play();
         }
 
-         */
     }
 
     private void clearOutputTA() {
@@ -352,6 +364,7 @@ public class ThreadModeller extends Thread {
     private void appendOutputTF(String text) {
         doJavaFXEvent(e -> mainScene.outputTA.appendText(text));
     }
+         */
 
     /**
      * Метод для обновления статуса в GUI из потока моделлера
