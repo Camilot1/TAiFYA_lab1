@@ -101,7 +101,7 @@ public class Modeller extends Thread {
                 case Y:
                     if (tokenPackage.addToken(token)) booleanPackage.checkBot();
                     if (token.getIndex().equals("к")) {
-                        booleanPackage.updateStatus("Выполнение окончено.");
+                        booleanPackage.updateStatus("Выполнение окончено. Включите проигрывание (нажмите кнопку [p], расположенную справа).");
                         return;
                     }
                     break;

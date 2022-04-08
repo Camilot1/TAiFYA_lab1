@@ -49,8 +49,8 @@ public class LSATab extends Tab {
         root.getChildren().addAll(
                 GuiConstructor.createLabel("Уравнение:", 10, 10, 360),
                 tfText = GuiConstructor.createTextField(10, 35, 420),
-                mbType = GuiConstructor.createMenuButton(EnumCalculateType.getFirstType(), EnumCalculateType.getShowToUserValues(), 440, 35, 100),
-                GuiConstructor.createButton(e -> calculate(tfText.getText()),"Обработать",  550, 35, 140),
+                mbType = GuiConstructor.createMenuButton(EnumCalculateType.getFirstType(), EnumCalculateType.getShowToUserValues(), 440, 35, 120),
+                GuiConstructor.createButton(e -> calculate(tfText.getText()),"Обработать",  570, 35, 140),
                 GuiConstructor.createButton(e -> clear(),"Очистить",  550, 95, 140),
                 GuiConstructor.createLabel("Файл с данными:", 10, 70, 360),
                 mbFile = GuiConstructor.createMenuButton(getFiles(), 10, 95, 280),
