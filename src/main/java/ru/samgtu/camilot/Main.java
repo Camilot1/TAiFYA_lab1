@@ -16,7 +16,7 @@ public class Main extends Application {
     public void start(Stage primaryStage) {
 
         primaryStage.setTitle("Программа");
-        primaryStage.setWidth(1600);
+        primaryStage.setWidth(800);
         primaryStage.setHeight(800);
 
         TabPane tabPane = new TabPane();

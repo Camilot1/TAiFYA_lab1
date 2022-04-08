@@ -46,7 +46,7 @@ public class FieldTab extends Tab {
                 mbPathLSA = GuiConstructor.createMenuButton(getFiles("data\\pathLSA\\"), 85, 55, 220),
                 GuiConstructor.createButton(e -> updateFiles(mbPathLSA, "data\\pathLSA\\"), "↻", 315, 55, 25),
                 GuiConstructor.createButton(e -> start(), "Старт", 355, 15, 140),
-                GuiConstructor.createButton(e -> clear(), "Сброс", 355, 55, 140),
+                //GuiConstructor.createButton(e -> clear(), "Сброс", 355, 55, 140),
                 labelStatus = GuiConstructor.createLabel("Статус:", 15, 95, 700),
                 GuiConstructor.createLabel("Время одного кадра:", 510, 19, 140, Pos.CENTER),
                 tfDelay = GuiConstructor.createTextField("50", 655, 14, 60),
@@ -119,7 +119,7 @@ public class FieldTab extends Tab {
         if (data.size() == 0) { updateStatus("В файле выбранной ЛСА отсутствуют данные!"); return; }
 
 
-        //clear();
+        clear();
         try {
             List<Token> tokens = Parser.parseTokenString(data.get(0), true);
             Bot bot = field.getBot();

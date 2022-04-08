@@ -43,7 +43,7 @@ public class TokenPackage {
     public void infiniteCycle(boolean[] booleans) {
         sb.setLength(0);
         sb.append('[');
-        for (boolean b: booleans) sb.append(Validator.getIntFromBoolean(b));
+        if (booleans != null) for (boolean b: booleans) sb.append(Validator.getIntFromBoolean(b));
         sb.append("] Бесконечный цикл\n");
         setTAText(sb.toString());
         sb.setLength(0);

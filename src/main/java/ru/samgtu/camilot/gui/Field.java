@@ -119,6 +119,7 @@ public class Field {
             bot.setDirection(EnumDirection.RIGHT);
             bot.setPosition(startXYIndexes);
         }
+        scrollRoot.getChildren().remove(bot.getRoot());
         scrollRoot.getChildren().add(bot.getRoot());
     }
 
