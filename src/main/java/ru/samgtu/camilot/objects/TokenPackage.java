@@ -76,13 +76,13 @@ public class TokenPackage {
     public boolean addToken(Token token) throws Exception {
         switch (type) {
             case STEP_BY_STEP:
+            case COMMON:
                 if (taOutput == null) throw new Exception("Не найдено поле для вывода токена.");
                 taOutput.appendText(token.toString());
                 return false;
-            case COMMON:
             case ALL:
                 if (taOutput == null) throw new Exception("Не найдено поле для вывода токена.");
-                sb.append(token.getType().getChar()).append(token.getIndex());
+                sb.append(token.toString());
                 if (token.getType().equals(EnumTokenType.Y) && token.getIndex().equals("к")) {
                     sb.append('\n');
                     String s = sb.toString();

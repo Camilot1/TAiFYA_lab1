@@ -91,8 +91,8 @@ public class Parser {
             if (type != null) { //Если корректный символ операции
                 while (i+1 < s.length()) { //Поиск полного индекса
                     if (Validator.isIndexChar(s.charAt(i+1))) {
-                        i++;
                         sb.append(s.charAt(i+1));
+                        i++;
                     } else break;
                 }
 

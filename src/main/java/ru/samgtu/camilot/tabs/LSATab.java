@@ -82,8 +82,8 @@ public class LSATab extends Tab {
                 if (type == null) return;
                 switch (type) {
                     case COMMON:
-                        checkForLoop = true;
-                        booleanPackage.setIsWaitedForCommonValues(true);
+                        checkForLoop = false;
+                        booleanPackage.setIsWaitedForValuesString(true);
                         break;
                     case ALL:
                         checkForLoop = true;

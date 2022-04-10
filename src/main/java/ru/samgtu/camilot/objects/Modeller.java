@@ -113,28 +113,31 @@ public class Modeller extends Thread {
                         booleanPackage.waitForNextStep(this, token);
                         instantPause();
                         if (!booleanPackage.getBoolean(0)) useUpArrow = true;
-                    } else if (booleanPackage.isWaitedForCommonValues()) {
-                        booleanPackage.setIsWaitedForCommonValues(false);
-                        booleanPackage.waitForCommonValues(this);
-                        instantPause();
-                        if (!booleanPackage.getBoolean(formalToRealIndexMap.get(token.getIndex()))) useUpArrow = true;
                     } else if (booleanPackage.isWaitedForValuesString()) {
-                        booleanPackage.setIsWaitedForValuesString(false);
                         booleanPackage.waitForValuesString(this);
                         instantPause();
-                        if (!booleanPackage.getNextBoolean()) useUpArrow = true;
-                    }
-                    else if (!booleanPackage.getBoolean(formalToRealIndexMap.get(token.getIndex()))) {
-                        useUpArrow = true;
+                        booleanPackage.setIsWaitedForValuesString(false);
+                        if (!booleanPackage.getFirstBoolean()) useUpArrow = true;
                     } else if (booleanPackage.isHasGivenValuesString()) {
-                        if (!booleanPackage.getNextBoolean()) useUpArrow = true;
+                        if (booleanPackage.hasNextBoolean()) {
+                            if (!booleanPackage.getNextBoolean()) useUpArrow = true;
+                        } else {
+                            booleanPackage.updateStatus("Выполнение окончено.");
+                            return;
+                        }
+                    }
+                    else {
+                        int realIndex = formalToRealIndexMap.get(token.getIndex());
+                        if (!booleanPackage.getBoolean(realIndex)) {
+                            useUpArrow = true;
+                        }
                     }
                     break;
                 case UP:
                     if (useUpArrow) { //Если должен перейти по UP-стрелке
                         tokenIndex = getDownArrowTokenByIndex(tokens, token.getIndex()); //то переходит на DOWN-стрелку
-                        if (tokenIndex == -1) throw new Exception("Не нашёл стрелку вниз с указанным индексом.");
-                        useUpArrow = false;
+                        if (tokenIndex != -1) useUpArrow = false;
+                        else throw new Exception("Не нашёл стрелку вниз с указанным индексом.");
                     }
                     break;
                 case W:

@@ -19,7 +19,6 @@ public class BooleanPackage {
     private volatile TextField tfInput;
     private volatile Button btnNextStep;
     private volatile Label labelStatus;
-    private volatile boolean isWaitedForCommonValues;
     private volatile boolean isWaitedForValuesString;
 
     private volatile int step = 0, maxBitsCount = 0, maxStep = 0;
@@ -45,6 +44,10 @@ public class BooleanPackage {
         return currentBoolean < booleans.length - 1;
     }
 
+    public synchronized boolean getFirstBoolean() {
+        return booleans[0];
+    }
+
     public synchronized boolean getNextBoolean() {
         currentBoolean++;
         return booleans[currentBoolean];
@@ -55,16 +58,12 @@ public class BooleanPackage {
         booleans = getBinaryArray(step, maxBitsCount);
     }
 
-    public synchronized void setIsWaitedForCommonValues(boolean flag) {
-        isWaitedForCommonValues = flag;
-    }
-
     public synchronized void setIsWaitedForValuesString(boolean flag) {
         isWaitedForValuesString = flag;
     }
 
     public synchronized void setHasGivenValuesString(boolean flag) {
-        this.hasGivenValuesString = false;
+        this.hasGivenValuesString = flag;
     }
 
     public int getStep() {
@@ -151,7 +150,7 @@ public class BooleanPackage {
                 boolean[] bs = Validator.parseBooleans(tfInput.getText());
                 setBooleans(bs);
                 setHasGivenValuesString(true);
-                if (bs.length == 0) {
+                if (bs.length != 0) {
                     btnNextStep.setOnAction(e1 -> {
                     });
                     modeller.play();
@@ -186,9 +185,6 @@ public class BooleanPackage {
         return booleans;
     }
 
-    public boolean isWaitedForCommonValues() {
-        return isWaitedForCommonValues;
-    }
     public boolean isWaitedForValuesString() {
         return isWaitedForValuesString;
     }
