@@ -8,7 +8,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.util.Duration;
-import ru.samgtu.camilot.Validator;
 import ru.samgtu.camilot.enums.EnumCalculateType;
 
 
@@ -21,8 +20,11 @@ public class BooleanPackage {
     private volatile Button btnNextStep;
     private volatile Label labelStatus;
     private volatile boolean isWaitedForCommonValues;
+    private volatile boolean isWaitedForValuesString;
 
     private volatile int step = 0, maxBitsCount = 0, maxStep = 0;
+    private volatile int currentBoolean = 0;
+    private volatile boolean hasGivenValuesString;
 
     public BooleanPackage(EnumCalculateType type) {
         this.type = type;
@@ -39,6 +41,15 @@ public class BooleanPackage {
         booleans = getBinaryArray(step, maxBitsCount);
     }
 
+    public boolean hasNextBoolean() {
+        return currentBoolean < booleans.length - 1;
+    }
+
+    public synchronized boolean getNextBoolean() {
+        currentBoolean++;
+        return booleans[currentBoolean];
+    }
+
     public synchronized void nextBooleans() {
         step++;
         booleans = getBinaryArray(step, maxBitsCount);
@@ -46,6 +57,14 @@ public class BooleanPackage {
 
     public synchronized void setIsWaitedForCommonValues(boolean flag) {
         isWaitedForCommonValues = flag;
+    }
+
+    public synchronized void setIsWaitedForValuesString(boolean flag) {
+        isWaitedForValuesString = flag;
+    }
+
+    public synchronized void setHasGivenValuesString(boolean flag) {
+        this.hasGivenValuesString = false;
     }
 
     public int getStep() {
@@ -71,6 +90,10 @@ public class BooleanPackage {
 
     public void checkBot() {
         if (bot != null) setBooleans(bot.checkDirections());
+    }
+
+    public boolean hasBot() {
+        return bot != null;
     }
 
     public EnumCalculateType getType() {
@@ -116,12 +139,36 @@ public class BooleanPackage {
 
     }
 
-    public void waitForNextStep(Modeller modeller) throws Exception {
+    public void waitForValuesString(Modeller modeller) throws Exception {
         if (btnNextStep == null) throw new Exception("Не подключена кнопка следующего хода.");
         if (tfInput == null) throw new Exception("Не подключена кнопка текстового поля с входными данными.");
         if (labelStatus == null) throw new Exception("Не подключена надпись статуса.");
 
-        updateStatus("Введите логическое значение.");
+        int count = Modeller.getFormalToRealIndexMap(modeller.getTokens()).keySet().size();
+        updateStatus("Введите строку с логическими значениями");
+        btnNextStep.setOnAction(e -> {
+            try {
+                boolean[] bs = Validator.parseBooleans(tfInput.getText());
+                setBooleans(bs);
+                setHasGivenValuesString(true);
+                if (bs.length == 0) {
+                    btnNextStep.setOnAction(e1 -> {
+                    });
+                    modeller.play();
+                } else updateStatus("Не найдены логические значения. Повторите ввод строки");
+            } catch (Exception ex) {
+                updateStatus(ex.getMessage());
+            }
+        });
+
+    }
+
+    public void waitForNextStep(Modeller modeller, Token token) throws Exception {
+        if (btnNextStep == null) throw new Exception("Не подключена кнопка следующего хода.");
+        if (tfInput == null) throw new Exception("Не подключена кнопка текстового поля с входными данными.");
+        if (labelStatus == null) throw new Exception("Не подключена надпись статуса.");
+
+        updateStatus("Введите логическое значение для " + token.toString());
         btnNextStep.setOnAction(e -> {
             try {
                 boolean[] b = new boolean[1];
@@ -141,6 +188,13 @@ public class BooleanPackage {
 
     public boolean isWaitedForCommonValues() {
         return isWaitedForCommonValues;
+    }
+    public boolean isWaitedForValuesString() {
+        return isWaitedForValuesString;
+    }
+
+    public boolean isHasGivenValuesString() {
+        return hasGivenValuesString;
     }
 
     public boolean isStepByStepMode() {

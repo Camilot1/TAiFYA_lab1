@@ -1,9 +1,7 @@
 package ru.samgtu.camilot.objects;
 
-import ru.samgtu.camilot.Main;
 import ru.samgtu.camilot.enums.EnumCalculateType;
 import ru.samgtu.camilot.enums.EnumTokenType;
-import ru.samgtu.camilot.tabs.LSATab;
 
 import java.util.*;
 
@@ -101,7 +99,8 @@ public class Modeller extends Thread {
                 case Y:
                     if (tokenPackage.addToken(token)) booleanPackage.checkBot();
                     if (token.getIndex().equals("к")) {
-                        booleanPackage.updateStatus("Выполнение окончено. Включите проигрывание (нажмите кнопку [p], расположенную справа).");
+                        booleanPackage.updateStatus("Выполнение окончено.");
+                        if (tokenPackage.hasBot()) tokenPackage.playScreenShots();
                         return;
                     }
                     break;
@@ -111,17 +110,24 @@ public class Modeller extends Thread {
                         else xTokenHistory.add(token);
                     }
                     if (booleanPackage.isStepByStepMode()) {
-                        booleanPackage.waitForNextStep(this);
+                        booleanPackage.waitForNextStep(this, token);
                         instantPause();
-
-                        if (booleanPackage.getBoolean(0)) useUpArrow = true;
+                        if (!booleanPackage.getBoolean(0)) useUpArrow = true;
                     } else if (booleanPackage.isWaitedForCommonValues()) {
                         booleanPackage.setIsWaitedForCommonValues(false);
                         booleanPackage.waitForCommonValues(this);
                         instantPause();
-                        if (booleanPackage.getBoolean(formalToRealIndexMap.get(token.getIndex()))) useUpArrow = true;
-                    } else if (booleanPackage.getBoolean(formalToRealIndexMap.get(token.getIndex()))) {
+                        if (!booleanPackage.getBoolean(formalToRealIndexMap.get(token.getIndex()))) useUpArrow = true;
+                    } else if (booleanPackage.isWaitedForValuesString()) {
+                        booleanPackage.setIsWaitedForValuesString(false);
+                        booleanPackage.waitForValuesString(this);
+                        instantPause();
+                        if (!booleanPackage.getNextBoolean()) useUpArrow = true;
+                    }
+                    else if (!booleanPackage.getBoolean(formalToRealIndexMap.get(token.getIndex()))) {
                         useUpArrow = true;
+                    } else if (booleanPackage.isHasGivenValuesString()) {
+                        if (!booleanPackage.getNextBoolean()) useUpArrow = true;
                     }
                     break;
                 case UP:
@@ -131,13 +137,10 @@ public class Modeller extends Thread {
                         useUpArrow = false;
                     }
                     break;
-                case DOWN: //Не используется
-                    break;
                 case W:
                     useUpArrow = true;
                     break;
             }
-
             tokenIndex++;
         }
     }

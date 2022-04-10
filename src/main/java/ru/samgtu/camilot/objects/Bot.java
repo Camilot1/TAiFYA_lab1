@@ -1,11 +1,7 @@
 package ru.samgtu.camilot.objects;
 
-import com.sun.org.apache.xpath.internal.operations.Bool;
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
-import javafx.util.Duration;
 import ru.samgtu.camilot.*;
 import ru.samgtu.camilot.enums.EnumCalculateType;
 import ru.samgtu.camilot.enums.EnumDirection;
@@ -49,6 +45,7 @@ public class Bot extends ColoredXYGuiObject {
         booleanPackage.setGuiObject(null, null, Main.fieldTab.getLabelStatus());
         TokenPackage tokenPackage = new TokenPackage(EnumCalculateType.BOT, booleanPackage);
         tokenPackage.setBot(this);
+        tokenPackage.setField(field);
 
         modeller.model(tokens, booleanPackage, tokenPackage, false);
     }
@@ -110,11 +107,11 @@ public class Bot extends ColoredXYGuiObject {
         boolean[] xs = new boolean[5];
         IntVector2 pos = getPosition();
 
-        xs[0] = tiles[pos.x + leftDif.x][pos.y + leftDif.y].getType() != EnumTileType.WALL;
-        xs[1] = tiles[pos.x + forwardDif.x][pos.y + forwardDif.y].getType() != EnumTileType.WALL;
-        xs[2] = tiles[pos.x + rightDif.x][pos.y + rightDif.y].getType() != EnumTileType.WALL;
-        xs[3] = tiles[pos.x][pos.y].getType() == EnumTileType.END;
-        xs[4] = tiles[pos.x][pos.y].getType() == EnumTileType.START;
+        xs[0] = tiles[pos.x + leftDif.x][pos.y + leftDif.y].getType() == EnumTileType.WALL;
+        xs[1] = tiles[pos.x + forwardDif.x][pos.y + forwardDif.y].getType() == EnumTileType.WALL;
+        xs[2] = tiles[pos.x + rightDif.x][pos.y + rightDif.y].getType() == EnumTileType.WALL;
+        xs[3] = tiles[pos.x][pos.y].getType() != EnumTileType.END;
+        xs[4] = tiles[pos.x][pos.y].getType() != EnumTileType.START;
 
         System.out.println("  Проверил условия");
 
@@ -141,47 +138,5 @@ public class Bot extends ColoredXYGuiObject {
         System.out.println("  Выполнил команду " + token);
         makeScreenShot();
     }
-
-    /*
-
-    public void nextStep() {
-        try {
-            Main.getThreadModeller().updateBotData(checkDirections());
-        } catch (Exception e) {
-            Main.getThreadModeller().updateFieldStatus(e.getMessage());
-            e.printStackTrace();
-        }
-    }
-
-
-    public void afterStep(boolean movedForward) {
-        if (movedForward) {
-            if (getPosition().equals(fieldTab.getStartTile().getPosition())) {
-                Main.getThreadModeller().updateFieldStatus("Путь не найден. Бот вернулся в начало");
-                tokens = null;
-                screenShots = null;
-            } else if (getPosition().equals(fieldTab.getEndTile().getPosition())) {
-                Main.getThreadModeller().updateFieldStatus("Путь найден. Вы можете посмотреть повтор прохождения лабиринта с помощью кнопок справа.");
-                tokens = null;
-                screenShots = null;
-            }
-            else {
-                nextStep();
-            }
-        }
-        else {
-            nextStep();
-        }
-    }
-
-    public void executeLSA(String lsa) throws Exception {
-        List<Token> tokens = Parser.parseTokenString(lsa, true);
-        for(Token token: Parser.getSpecificTokens(tokens, EnumTokenType.Y, new String[]{"н", "к"})) executeCommand(token);
-    }
-
-
-
-
-    */
 
 }

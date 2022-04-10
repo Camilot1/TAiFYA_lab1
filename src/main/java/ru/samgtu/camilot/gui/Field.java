@@ -142,6 +142,7 @@ public class Field {
     public void play() {
         if (bot == null || isPlaying) return;
         List<ScreenShot> screenShots = bot.getScreenShots();
+        if (screenShots.size() == 0) return;
         firstScreenShot();
         int[] counter = new int[1];
         Timeline timeline = new Timeline (new KeyFrame(Duration.millis(tab.getPlayFrameDelay()), ae -> {

@@ -1,16 +1,10 @@
 package ru.samgtu.camilot.tabs;
 
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
-import javafx.util.Duration;
 import ru.samgtu.camilot.GuiConstructor;
-import ru.samgtu.camilot.Main;
-import ru.samgtu.camilot.Parser;
-import ru.samgtu.camilot.Validator;
+import ru.samgtu.camilot.objects.Parser;
+import ru.samgtu.camilot.objects.Validator;
 import ru.samgtu.camilot.enums.EnumCalculateType;
 import ru.samgtu.camilot.enums.EnumPath;
 import ru.samgtu.camilot.managers.FileManager;
@@ -74,7 +68,7 @@ public class LSATab extends Tab {
             try {
                 taOutput.setText("");
                 String validatedLSA = Validator.validateString(lsa);
-                List<Token> tokens = Parser.parseTokenString(validatedLSA, true);
+                List<Token> tokens = Parser.parseTokenString(validatedLSA);
 
                 EnumCalculateType type = EnumCalculateType.getEnumByType(mbType.getText());
 

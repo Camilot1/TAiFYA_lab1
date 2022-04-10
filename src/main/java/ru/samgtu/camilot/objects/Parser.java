@@ -1,7 +1,6 @@
-package ru.samgtu.camilot;
+package ru.samgtu.camilot.objects;
 
 import ru.samgtu.camilot.enums.EnumTokenType;
-import ru.samgtu.camilot.objects.Token;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -80,11 +79,10 @@ public class Parser {
      * @return список токенов
      * @throws Exception ошибка при парсинге токенов
      */
-    public static List<Token> parseTokenString(String s, boolean checkStartAndEnd) throws Exception {
+    public static List<Token> parseTokenString(String s) throws Exception {
         int i = 0;
-        StringBuilder sb = new StringBuilder();
         List<Token> tokens = new ArrayList<>();
-
+        StringBuilder sb = new StringBuilder();
         EnumTokenType type;
 
         while (i < s.length()) {
@@ -92,28 +90,21 @@ public class Parser {
 
             if (type != null) { //Если корректный символ операции
                 while (i+1 < s.length()) { //Поиск полного индекса
-                    char ch = Validator.validateChar(s.charAt(i+1));
-                    if (Validator.isIndexChar(ch)) {
+                    if (Validator.isIndexChar(s.charAt(i+1))) {
                         i++;
-                        sb.append(ch);
+                        sb.append(s.charAt(i+1));
                     } else break;
                 }
 
                 if (type != EnumTokenType.W && sb.length() == 0) throw new Exception("Введена некорректная строка. Причина: некорректный индекс после токена. Индекс в строке: " + i); //Если
-                else {
-                    tokens.add(new Token(type, sb.toString()));
-                }
+                else tokens.add(new Token(type, sb.toString()));
                 sb.setLength(0);
+                i++;
             } else throw new Exception();
-            i++;
         }
 
-        if (checkStartAndEnd) {
-            if (!tokens.contains(new Token(EnumTokenType.Y, "н")))
-                throw new Exception("Ошибка. В ЛСА не найден Yн");
-            if (!tokens.contains(new Token(EnumTokenType.Y, "к")))
-                throw new Exception("Ошибка. В ЛСА не найден Yк");
-        }
+        if (!tokens.contains(new Token(EnumTokenType.Y, "н"))) throw new Exception("Ошибка. В ЛСА не найден Yн");
+        if (!tokens.contains(new Token(EnumTokenType.Y, "к"))) throw new Exception("Ошибка. В ЛСА не найден Yк");
 
         return tokens;
     }

@@ -5,15 +5,15 @@ import javafx.animation.Timeline;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
 import javafx.util.Duration;
-import ru.samgtu.camilot.Validator;
 import ru.samgtu.camilot.enums.EnumCalculateType;
 import ru.samgtu.camilot.enums.EnumTokenType;
+import ru.samgtu.camilot.gui.Field;
 
 public class TokenPackage {
 
     private volatile TextArea taOutput;
+    private Field field;
     private Bot bot;
     private final EnumCalculateType type;
     private final StringBuilder sb = new StringBuilder();
@@ -22,6 +22,26 @@ public class TokenPackage {
     public TokenPackage(EnumCalculateType type, BooleanPackage booleanPackage) {
         this.type = type;
         this.booleanPackage = booleanPackage;
+    }
+
+    public boolean hasBot() {
+        return bot != null;
+    }
+
+    public void playScreenShots() {
+        if (hasField()) field.play();
+    }
+
+    public boolean hasField() {
+        return field != null;
+    }
+
+    public void setField(Field field) {
+        this.field = field;
+    }
+
+    public void removeField() {
+        field = null;
     }
 
     public void setTAOutput(TextArea taOutput) {

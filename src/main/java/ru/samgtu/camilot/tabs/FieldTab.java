@@ -1,15 +1,10 @@
 package ru.samgtu.camilot.tabs;
 
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
-import javafx.util.Duration;
 import ru.samgtu.camilot.GuiConstructor;
-import ru.samgtu.camilot.Parser;
+import ru.samgtu.camilot.objects.Parser;
 import ru.samgtu.camilot.gui.Field;
 import ru.samgtu.camilot.managers.FileManager;
 import ru.samgtu.camilot.objects.Bot;
@@ -22,7 +17,7 @@ import java.util.List;
 
 public class FieldTab extends Tab {
 
-     private final Field field;
+    private final Field field;
 
     private final MenuButton mbField;
     private final MenuButton mbPathLSA;
@@ -121,7 +116,7 @@ public class FieldTab extends Tab {
 
         clear();
         try {
-            List<Token> tokens = Parser.parseTokenString(data.get(0), true);
+            List<Token> tokens = Parser.parseTokenString(data.get(0));
             Bot bot = field.getBot();
             if (bot == null) throw new Exception("Бот не загружен.");
             bot.setScreenShots(new ArrayList<>());
