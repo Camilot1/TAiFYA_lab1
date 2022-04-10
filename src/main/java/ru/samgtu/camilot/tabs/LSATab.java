@@ -3,7 +3,7 @@ package ru.samgtu.camilot.tabs;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import ru.samgtu.camilot.GuiConstructor;
-import ru.samgtu.camilot.objects.Parser;
+import ru.samgtu.camilot.objects.Analyzer;
 import ru.samgtu.camilot.objects.Validator;
 import ru.samgtu.camilot.enums.EnumCalculateType;
 import ru.samgtu.camilot.enums.EnumPath;
@@ -18,13 +18,12 @@ import java.util.List;
 
 public class LSATab extends Tab {
 
-    private final AnchorPane root;
-
     private volatile Modeller modeller;
 
     private final TextField tfText;
     public final TextField tfInput;
     public final TextArea taOutput;
+    private final Button btnCalculate;
     private final MenuButton mbType;
     private final MenuButton mbFile;
     private final Button btnNextStep;
@@ -33,16 +32,18 @@ public class LSATab extends Tab {
     public LSATab() {
         super("Моделирование ЛСА");
         setClosable(false);
+        AnchorPane root;
         setContent(root = new AnchorPane());
 
         modeller = new Modeller();
+        modeller.setDaemon(true);
         modeller.start();
 
         root.getChildren().addAll(
                 GuiConstructor.createLabel("Уравнение:", 10, 10, 360),
                 tfText = GuiConstructor.createTextField(10, 35, 420),
                 mbType = GuiConstructor.createMenuButton(EnumCalculateType.getFirstType(), EnumCalculateType.getShowToUserValues(), 440, 35, 120),
-                GuiConstructor.createButton(e -> calculate(tfText.getText()),"Обработать",  570, 35, 140),
+                btnCalculate = GuiConstructor.createButton(e -> calculate(tfText.getText()),"Обработать",  570, 35, 140),
                 GuiConstructor.createButton(e -> clear(),"Очистить",  550, 95, 140),
                 GuiConstructor.createLabel("Файл с данными:", 10, 70, 360),
                 mbFile = GuiConstructor.createMenuButton(getFiles(), 10, 95, 280),
@@ -64,11 +65,13 @@ public class LSATab extends Tab {
 
     public void stopModelling() {
         modeller.stopModelling();
+        modeller.play();
         modeller.interrupt();
         modeller = new Modeller();
         modeller.start();
         taOutput.clear();
         updateStatus("Моделирование отменено.");
+        btnCalculate.setOnAction(e -> calculate(tfText.getText()));
     }
 
     public Modeller getModeller() {
@@ -77,11 +80,11 @@ public class LSATab extends Tab {
 
     private void calculate(String lsa) {
         if (!modeller.needToModel) {
-            stopModelling();
+            btnCalculate.setOnAction(e -> stopModelling());
             try {
                 taOutput.setText("");
                 String validatedLSA = Validator.validateString(lsa);
-                List<Token> tokens = Parser.parseTokenString(validatedLSA);
+                List<Token> tokens = Analyzer.parseTokenString(validatedLSA);
 
                 EnumCalculateType type = EnumCalculateType.getEnumByType(mbType.getText());
 

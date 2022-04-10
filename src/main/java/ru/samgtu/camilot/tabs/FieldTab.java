@@ -4,7 +4,7 @@ import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import ru.samgtu.camilot.GuiConstructor;
-import ru.samgtu.camilot.objects.Parser;
+import ru.samgtu.camilot.objects.Analyzer;
 import ru.samgtu.camilot.gui.Field;
 import ru.samgtu.camilot.managers.FileManager;
 import ru.samgtu.camilot.objects.Bot;
@@ -117,7 +117,7 @@ public class FieldTab extends Tab {
 
         clear();
         try {
-            List<Token> tokens = Parser.parseTokenString(data.get(0));
+            List<Token> tokens = Analyzer.parseTokenString(data.get(0));
             Bot bot = field.getBot();
             if (bot == null) throw new Exception("Бот не загружен.");
             bot.setScreenShots(new ArrayList<>());

@@ -34,9 +34,11 @@ public class Modeller extends Thread {
                         else booleanPackage.nextBooleans();
                     } else stopModelling();
                 } catch (RuntimeException re) {
-                    tokenPackage.infiniteCycle(booleanPackage.getBooleans());
-                    booleanPackage.nextBooleans();
-                    if (booleanPackage.getStep() >=  booleanPackage.getMaxStep()) stopModelling();
+                    if (tokenPackage != null && booleanPackage != null) {
+                        tokenPackage.infiniteCycle(booleanPackage.getBooleans());
+                        booleanPackage.nextBooleans();
+                        if (booleanPackage.getStep() >= booleanPackage.getMaxStep()) stopModelling();
+                    }
                 } catch (Exception e) {
                     e.printStackTrace();
                     stopModelling();

@@ -5,7 +5,7 @@ import ru.samgtu.camilot.enums.EnumTokenType;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Parser {
+public class Analyzer {
 
     /**
      * Метод проверки корректности токенов, полученных из строки с ЛСА.
