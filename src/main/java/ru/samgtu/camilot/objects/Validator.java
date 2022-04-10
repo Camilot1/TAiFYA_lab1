@@ -9,11 +9,7 @@ public class Validator {
      */
     public static String validateString(String s) {
         StringBuilder sb = new StringBuilder();
-
-        for (int i = 0; i < s.length(); i++) {
-            sb.append(validateChar(s.charAt(i)));
-        }
-
+        for (int i = 0; i < s.length(); i++) sb.append(validateChar(s.charAt(i)));
         return sb.toString();
     }
 
@@ -24,14 +20,13 @@ public class Validator {
      */
     public static boolean isIndexChar(char ch) {
         if ((int)ch > 47 && (int)ch < 58) return true; //цифра от 0 до 9
-        if (ch == 'к' || ch == 'н') return true;
-        return false;
+        return ch == 'к' || ch == 'н';
     }
 
     /**
      * Метод валидации символа. Исправляет регистр и раскладку символа
-     * @param ch
-     * @return
+     * @param ch входной символ
+     * @return валидированный символ
      */
     public static char validateChar(char ch) {
         switch (ch) {
@@ -67,10 +62,10 @@ public class Validator {
     }
 
     /**
-     * Валидация входного логического значения
-     * @param s входное значение
+     * Валидация одного входного логического значения
+     * @param s строка со входным логическим значением
      * @return логическое значение
-     * @throws Exception ошибка при некорректном значении
+     * @throws Exception ошибка при некорректном логическом значении
      */
     public static boolean parseBoolean(String s) throws Exception {
         if (s.length() != 1) throw new Exception("Ошибка. Введено больше одного символа.");
@@ -80,17 +75,23 @@ public class Validator {
         else throw new Exception("Введено некорректное логическое значение.");
     }
 
+    /**
+     * Валидация нескольких входных логических значений
+     * @param s строка со входными логическими значениями
+     * @return массив логических значений
+     * @throws Exception ошибка при некорректных логических значениях
+     */
     public static boolean[] parseBooleans(String s) throws Exception {
         boolean[] booleans = new boolean[s.length()];
         for (int i = 0; i < s.length(); i++) booleans[i] = parseBoolean(s.charAt(i));
         return booleans;
     }
-    public static boolean[] parseBooleans(String s, int size) throws Exception {
-        boolean[] booleans = new boolean[size];
-        for (int i = 0; i < size; i++) booleans[i] = parseBoolean(s.charAt(i));
-        return booleans;
-    }
 
+    /**
+     * Метод получения int значения из boolean
+     * @param value входное boolean значение
+     * @return int значение
+     */
     public static int getIntFromBoolean(boolean value) {
         return value ? 1: 0;
     }

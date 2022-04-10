@@ -67,7 +67,7 @@ public class Modeller extends Thread {
         while (!play) {
             try {
                 wait();
-            } catch (InterruptedException ex) {
+            } catch (InterruptedException ignored) {
 
             }
         }
@@ -178,7 +178,7 @@ public class Modeller extends Thread {
         return formalToRealIndexMap;
     }
 
-    private int getDownArrowTokenByIndex(List<Token> tokens, String index) {
+    public static int getDownArrowTokenByIndex(List<Token> tokens, String index) {
         for (int i = 0; i < tokens.size(); i++) {
             if (tokens.get(i).getType() == EnumTokenType.DOWN && tokens.get(i).getIndex().equals(index)) {
                 return i;

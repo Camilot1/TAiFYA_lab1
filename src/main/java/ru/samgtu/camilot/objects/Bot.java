@@ -94,7 +94,6 @@ public class Bot extends ColoredXYGuiObject {
     }
 
     public boolean[] checkDirections() {
-        System.out.println("  Проверяю условия");
         Tile[][] tiles = field.getTiles();
 
         EnumDirection left = direction.getRotatedDirection(-1);
@@ -113,29 +112,22 @@ public class Bot extends ColoredXYGuiObject {
         xs[3] = tiles[pos.x][pos.y].getType() != EnumTileType.END;
         xs[4] = tiles[pos.x][pos.y].getType() != EnumTileType.START;
 
-        System.out.println("  Проверил условия");
-
         return xs;
     }
 
     public void executeCommand(Token token) throws Exception {
-        System.out.println("  Начинаю выполнение команды " + token);
         switch (token.toString()) {
             case "Y1":
                 direction = direction.getRotatedDirection(-1);
-                System.out.println("Повернулся против часовой стрелки в положение " + direction.getDirectionChar());
                 break;
             case "Y2":
                 moveByDifference(direction.getPositionDifference());
-                System.out.println("Передвинулся на " + direction.getPositionDifference() + " клеток на позицию " + getXyIndexes());
                 break;
             case "Y3":
                 direction = direction.getRotatedDirection(1);
-                System.out.println("Повернулся по часовой часовой стрелке в положение " + direction.getDirectionChar());
                 break;
             default: throw new Exception("Некорректная команда для бота: " + token);
         }
-        System.out.println("  Выполнил команду " + token);
         makeScreenShot();
     }
 

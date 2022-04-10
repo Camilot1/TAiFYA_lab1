@@ -149,7 +149,6 @@ public class Field {
             nextScreenShot(true);
             counter[0]--;
             if (counter[0] == 0) isPlaying = false;
-            System.out.println(counter[0]);
         }));
         timeline.setCycleCount(screenShots.size()); //Ограничим число повторений
         counter[0] = screenShots.size();

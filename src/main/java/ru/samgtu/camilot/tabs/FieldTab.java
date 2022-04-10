@@ -64,8 +64,6 @@ public class FieldTab extends Tab {
 
     }
 
-
-
     /**
      * Метод обновления MenuItems с названиями файлов в MenuButton
      * @param menuButton кнопка
@@ -113,7 +111,6 @@ public class FieldTab extends Tab {
         List<String> data =  FileManager.readList("data\\pathLSA\\" + mbPathLSA.getText());
         if (data.size() == 0) { updateStatus("В файле выбранной ЛСА отсутствуют данные!"); return; }
 
-
         clear();
         try {
             List<Token> tokens = Parser.parseTokenString(data.get(0));
@@ -121,12 +118,9 @@ public class FieldTab extends Tab {
             if (bot == null) throw new Exception("Бот не загружен.");
             bot.setScreenShots(new ArrayList<>());
             bot.makeScreenShot();
-
             bot.start(tokens);
-
         } catch (Exception e) {
             updateStatus(e.getMessage());
-            e.printStackTrace();
         }
     }
 
@@ -148,7 +142,7 @@ public class FieldTab extends Tab {
     }
 
     public void updateStatus(String message) {
-        System.out.println(message);
+        labelStatus.setText(message);
     }
 
     public Label getLabelStatus() {
