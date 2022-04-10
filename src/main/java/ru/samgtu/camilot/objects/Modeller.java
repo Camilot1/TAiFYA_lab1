@@ -19,7 +19,7 @@ public class Modeller extends Thread {
     }
 
     /**
-     * Метод запуска потока объекта моделирования ГСА
+     * Метод запуска потока объекта моделлера ГСА
      */
     @Override
     public void run() {

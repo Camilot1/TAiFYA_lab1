@@ -58,7 +58,7 @@ public class Validator {
     public static boolean parseBoolean(char ch) throws Exception {
         if (ch == '1') return true;
         else if (ch == '0') return false;
-        else throw new Exception("Введено некорректное входное значение.");
+        else throw new Exception("Введено некорректное логическое значение. Разрешенные символы: 0, 1.");
     }
 
     /**
@@ -72,7 +72,7 @@ public class Validator {
 
         if (s.charAt(0) == '1') return true;
         else if (s.charAt(0) == '0') return false;
-        else throw new Exception("Введено некорректное логическое значение.");
+        else throw new Exception("Введено некорректное логическое значение. Разрешенные символы: 0, 1.");
     }
 
     /**

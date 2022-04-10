@@ -115,39 +115,16 @@ public class BooleanPackage {
         this.labelStatus = null;
     }
 
-    public void waitForCommonValues(Modeller modeller) throws Exception {
-        if (btnNextStep == null) throw new Exception("Не подключена кнопка следующего хода.");
-        if (tfInput == null) throw new Exception("Не подключена кнопка текстового поля с входными данными.");
-        if (labelStatus == null) throw new Exception("Не подключена надпись статуса.");
-
-        int count = Modeller.getFormalToRealIndexMap(modeller.getTokens()).keySet().size();
-        updateStatus("Введите " + count + " логических значений.");
-        btnNextStep.setOnAction(e -> {
-            try {
-                boolean[] bs = Validator.parseBooleans(tfInput.getText());
-                setBooleans(bs);
-                if (count == bs.length) {
-                    btnNextStep.setOnAction(e1 -> {
-                    });
-                    modeller.play();
-                } else updateStatus("Требуется ввести " + count + " логических значений, а Вы ввели только " + bs.length + ". Повторите ввод и повторно нажмите кнопку следующего хода.");
-            } catch (Exception ex) {
-                updateStatus(ex.getMessage());
-            }
-        });
-
-    }
-
     public void waitForValuesString(Modeller modeller) throws Exception {
         if (btnNextStep == null) throw new Exception("Не подключена кнопка следующего хода.");
         if (tfInput == null) throw new Exception("Не подключена кнопка текстового поля с входными данными.");
         if (labelStatus == null) throw new Exception("Не подключена надпись статуса.");
 
-        int count = Modeller.getFormalToRealIndexMap(modeller.getTokens()).keySet().size();
         updateStatus("Введите строку с логическими значениями");
         btnNextStep.setOnAction(e -> {
             try {
                 boolean[] bs = Validator.parseBooleans(tfInput.getText());
+                tfInput.setText("");
                 setBooleans(bs);
                 setHasGivenValuesString(true);
                 if (bs.length != 0) {
@@ -172,6 +149,7 @@ public class BooleanPackage {
             try {
                 boolean[] b = new boolean[1];
                 b[0] = Validator.parseBoolean(tfInput.getText());
+                tfInput.setText("");
                 setBooleans(b);
                 btnNextStep.setOnAction(e1 -> {});
                 modeller.play();

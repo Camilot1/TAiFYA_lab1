@@ -43,7 +43,7 @@ public class LSATab extends Tab {
                 GuiConstructor.createLabel("Уравнение:", 10, 10, 360),
                 tfText = GuiConstructor.createTextField(10, 35, 420),
                 mbType = GuiConstructor.createMenuButton(EnumCalculateType.getFirstType(), EnumCalculateType.getShowToUserValues(), 440, 35, 120),
-                btnCalculate = GuiConstructor.createButton(e -> calculate(tfText.getText()),"Обработать",  570, 35, 140),
+                btnCalculate = GuiConstructor.createButton(e -> calculate(tfText.getText()),"Запустить моделирование",  570, 35, 200),
                 GuiConstructor.createButton(e -> clear(),"Очистить",  550, 95, 140),
                 GuiConstructor.createLabel("Файл с данными:", 10, 70, 360),
                 mbFile = GuiConstructor.createMenuButton(getFiles(), 10, 95, 280),
@@ -53,12 +53,12 @@ public class LSATab extends Tab {
                 }, "↻", 300, 95, 25),
                 GuiConstructor.createButton(e -> loadFile(), "Загрузить из файла", 340, 95, 200),
                 labelStatus = GuiConstructor.createLabel("Статус: ", 10, 135, 700),
-                GuiConstructor.createLabel("Входные данные:", 10, 175, 180),
-                GuiConstructor.createLabel("Выходные данные:", 210, 175, 180),
-                tfInput = GuiConstructor.createTextField("", 10, 200, 180),
-                taOutput = GuiConstructor.createTextArea(false,210, 200, 400, 300),
-                btnNextStep = GuiConstructor.createButton(e -> nextStep(), "Следующий шаг", 10, 240, 180),
-                GuiConstructor.createButton(e -> stopModelling(), "Отменить моделирование", 10, 280, 180)
+                GuiConstructor.createLabel("Входные данные:", 10, 175, 200),
+                GuiConstructor.createLabel("Выходные данные:", 230, 175, 200),
+                tfInput = GuiConstructor.createTextField("", 10, 200, 200),
+                taOutput = GuiConstructor.createTextArea(false,230, 200, 400, 300),
+                btnNextStep = GuiConstructor.createButton(e -> nextStep(), "Следующий шаг", 10, 240, 200),
+                GuiConstructor.createButton(e -> stopModelling(), "Остановить моделирование", 10, 280, 200)
 
         );
     }
