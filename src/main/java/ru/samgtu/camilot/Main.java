@@ -15,9 +15,9 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) {
 
-        primaryStage.setTitle("Программа");
+        primaryStage.setTitle("Программа для моделирования");
         primaryStage.setWidth(800);
-        primaryStage.setHeight(800);
+        primaryStage.setHeight(700);
 
         TabPane tabPane = new TabPane();
         tabPane.getTabs().addAll(
@@ -26,6 +26,12 @@ public class Main extends Application {
         );
 
         primaryStage.setScene(new Scene(tabPane));
+        primaryStage.setOnCloseRequest(e -> {
+            lsaTab.getModeller().interrupt();
+            try {
+                fieldTab.getField().getBot().getModeller().interrupt();
+            } catch (Exception ignored) {}
+        });
         primaryStage.show();
 
     }

@@ -30,7 +30,7 @@ public class FieldTab extends Tab {
         AnchorPane root;
         setContent(root = new AnchorPane());
 
-        field = new Field(this, new DoubleVector2(10, 130), new DoubleVector2(700, 700));
+        field = new Field(this, new DoubleVector2(10, 130), new DoubleVector2(700, 500));
 
         root.getChildren().addAll(
                 field.getScrollPane(),
@@ -82,6 +82,10 @@ public class FieldTab extends Tab {
         List<String> list = new ArrayList<>();
         for (File file: FileManager.getFilesInDir(filePath))  list.add(file.getName());
         return list;
+    }
+
+    public Field getField() {
+        return field;
     }
 
     public int getPlayFrameDelay() {

@@ -18,6 +18,7 @@ public class Parser {
      * @throws Exception ошибка при некорректном наборе токенов
      */
     public static void checkTokenList(List<Token> tokens) throws Exception {
+        if (tokens.size() == 0) throw new Exception("Некорректная ЛСА. Причина: введена пустая строка");
         if (!tokens.get(0).toString().equals("Yн")) throw new Exception("Некорректная ЛСА. Причина: ЛСА начинается не с токена Yн");
         if (!tokens.get(tokens.size()-1).toString().equals("Yк")) throw new Exception("Некорректная ЛСА. Причина: ЛСА заканчивается не на токен Yк");
 
@@ -38,13 +39,28 @@ public class Parser {
                 if (!(tokens.get(i-1).getType() == EnumTokenType.W || tokens.get(i-1).getType() == EnumTokenType.X)) {
                     throw new Exception("Некорректная ЛСА. Причина: верхняя стрелка стоит после токена " + tokens.get(i-1).toString() + " (№" + (i-1) + "), а не после токенов X или W");
                 }
-                int index = Modeller.getDownArrowTokenByIndex(tokens, token.getIndex());
+                int index = getDownArrowTokenByIndex(tokens, token.getIndex());
                 if (index == -1) {
                     throw new Exception("Некорректная ЛСА. Причина: верхняя стрелка указывает на несуществующую нижнюю стрелку. Номер токена в строке: " + i);
                 }
             }
             i++;
         }
+    }
+
+    /**
+     * Метод получения номера нижней стрелки в массиве токена по её индексу
+     * @param tokens список токенов
+     * @param index индекс нижней стрелки
+     * @return номер нижней стрелки в массиве токенов. Возвращает -1, если нижняя стрелка не найдена
+     */
+    private static int getDownArrowTokenByIndex(List<Token> tokens, String index) {
+        for (int i = 0; i < tokens.size(); i++) {
+            if (tokens.get(i).getType() == EnumTokenType.DOWN && tokens.get(i).getIndex().equals(index)) {
+                return i;
+            }
+        }
+        return -1;
     }
 
     /**

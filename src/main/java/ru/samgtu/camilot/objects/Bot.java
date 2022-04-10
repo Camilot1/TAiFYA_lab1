@@ -50,6 +50,10 @@ public class Bot extends ColoredXYGuiObject {
         modeller.model(tokens, booleanPackage, tokenPackage, false);
     }
 
+    public Modeller getModeller() {
+        return modeller;
+    }
+
     public List<ScreenShot> getScreenShots() {
         return screenShots;
     }

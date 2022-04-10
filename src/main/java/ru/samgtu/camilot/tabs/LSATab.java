@@ -20,7 +20,7 @@ public class LSATab extends Tab {
 
     private final AnchorPane root;
 
-    private final Modeller modeller;
+    private volatile Modeller modeller;
 
     private final TextField tfText;
     public final TextField tfInput;
@@ -29,8 +29,6 @@ public class LSATab extends Tab {
     private final MenuButton mbFile;
     private final Button btnNextStep;
     private final Label labelStatus;
-
-    private volatile boolean isModelling;
 
     public LSATab() {
         super("Моделирование ЛСА");
@@ -58,13 +56,28 @@ public class LSATab extends Tab {
                 GuiConstructor.createLabel("Выходные данные:", 210, 175, 180),
                 tfInput = GuiConstructor.createTextField("", 10, 200, 180),
                 taOutput = GuiConstructor.createTextArea(false,210, 200, 400, 300),
-                btnNextStep = GuiConstructor.createButton(e -> nextStep(), "Следующий шаг", 10, 240, 180)
-                //GuiConstructor.createButton(e -> Main.getThreadModeller().play(), "PLAY", 0, 0, 50)
+                btnNextStep = GuiConstructor.createButton(e -> nextStep(), "Следующий шаг", 10, 240, 180),
+                GuiConstructor.createButton(e -> stopModelling(), "Отменить моделирование", 10, 280, 180)
+
         );
+    }
+
+    public void stopModelling() {
+        modeller.stopModelling();
+        modeller.interrupt();
+        modeller = new Modeller();
+        modeller.start();
+        taOutput.clear();
+        updateStatus("Моделирование отменено.");
+    }
+
+    public Modeller getModeller() {
+        return modeller;
     }
 
     private void calculate(String lsa) {
         if (!modeller.needToModel) {
+            stopModelling();
             try {
                 taOutput.setText("");
                 String validatedLSA = Validator.validateString(lsa);

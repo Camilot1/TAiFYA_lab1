@@ -16,9 +16,11 @@ public class Modeller extends Thread {
     private volatile boolean checkForLoop;
 
     public Modeller() {
-
     }
 
+    /**
+     * Метод запуска потока объекта моделирования ГСА
+     */
     @Override
     public void run() {
         while (!isInterrupted()) {
@@ -43,26 +45,43 @@ public class Modeller extends Thread {
         }
     }
 
-    private synchronized void stopModelling() {
+    /**
+     * Метод остановки моделирования ГСА
+     */
+    public synchronized void stopModelling() {
         needToModel = false;
         tokens = null;
         booleanPackage = null;
         tokenPackage = null;
     }
 
+    /**
+     * Метод разморозки процесса моделирования.
+     */
     public synchronized void play() {
         play = true;
         notify();
     }
 
+    /**
+     * Метод заморозки процесса моделирования.
+     */
     public void pause() {
         play = false;
     }
+
+    /**
+     * Метод мгновенной и безусловной заморозки процесса моделирования.
+     * Используется в момент ожидания получения новых логических значений.
+     */
     public void instantPause() {
         play = false;
         checkPause();
     }
 
+    /**
+     * Метод провеки состояния процесса.
+     */
     private synchronized void checkPause() {
         while (!play) {
             try {
@@ -73,10 +92,21 @@ public class Modeller extends Thread {
         }
     }
 
+    /**
+     * Метод получения используемых для моделирования токенов.
+     * @return список токенов
+     */
     public List<Token> getTokens() {
         return tokens;
     }
 
+    /**
+     * Метод для установки объектов и параметров, необходимых для моделирования, и запуска моделирования ГСА
+     * @param tokens список токенов из строки с ЛСА
+     * @param booleanPackage объект, хранящий в себе логические значения
+     * @param tokenPackage объект, в который записываются полученные при моделировании Y токены
+     * @param checkForLoop флаг проверки на бесконечный цикл для режима моделирования с перебором логических значений
+     */
     public synchronized void setupObjects(List<Token> tokens, BooleanPackage booleanPackage, TokenPackage tokenPackage, boolean checkForLoop) {
         if (needToModel) return;
         this.tokens = tokens;
@@ -86,9 +116,17 @@ public class Modeller extends Thread {
         needToModel = true;
     }
 
+    /**
+     * Метод моделирования ГСА
+     * @param tokens список токенов из строки с ЛСА
+     * @param booleanPackage объект, хранящий в себе логические значения
+     * @param tokenPackage объект, в который записываются полученные при моделировании Y токены
+     * @param checkForLoop флаг проверки на бесконечный цикл для режима моделирования с перебором логических значений
+     * @throws Exception ошибка при моделировании ГСА
+     */
     public synchronized void model(List<Token> tokens, BooleanPackage booleanPackage, TokenPackage tokenPackage, boolean checkForLoop) throws Exception {
         Map<String, Integer> formalToRealIndexMap = getFormalToRealIndexMap(tokens);
-        Set<Token> xTokenHistory = new HashSet<>(); //История логических токенов. Нужна для пресечения бесконечной прогонки
+        Set<Token> xTokenHistory = new HashSet<>(); //История логических токенов. Нужна для пресечения бесконечного моделирования, если запущен режим перебора значений
 
         boolean useUpArrow = false;
         int tokenIndex = 0;
@@ -148,7 +186,6 @@ public class Modeller extends Thread {
         }
     }
 
-
     /**
      * Метод, возвращащий мапу с ключами - формальными индексами X-токенов и значениями реальных индексов в массиве
      * @param tokens список всех токенов
@@ -178,7 +215,13 @@ public class Modeller extends Thread {
         return formalToRealIndexMap;
     }
 
-    public static int getDownArrowTokenByIndex(List<Token> tokens, String index) {
+    /**
+     * Метод получения номера нижней стрелки в массиве токена по её индексу
+     * @param tokens список токенов
+     * @param index индекс нижней стрелки
+     * @return номер нижней стрелки в массиве токенов. Возвращает -1, если нижняя стрелка не найдена
+     */
+    private int getDownArrowTokenByIndex(List<Token> tokens, String index) {
         for (int i = 0; i < tokens.size(); i++) {
             if (tokens.get(i).getType() == EnumTokenType.DOWN && tokens.get(i).getIndex().equals(index)) {
                 return i;
