@@ -57,6 +57,9 @@ public class Field {
         }
     }
 
+    /**
+     * Метод удаления поля.
+     */
     private void deleteField() {
         IntVector2 fieldSize = getFieldSize();
 
@@ -70,8 +73,12 @@ public class Field {
         endXYIndexes = null;
     }
 
+    /**
+     * Метод получения текущего размера поля лабиринта
+     * @return вектор с широной и высотой поля
+     */
     public IntVector2 getFieldSize() {
-        if (tiles == null) return new IntVector2(0, 0);
+        if (tiles == null) return new IntVector2();
         return new IntVector2(tiles.length, tiles[0].length);
     }
 
@@ -85,7 +92,6 @@ public class Field {
      */
     public void loadField(List<String> data) {
         IntVector2 dataSize = getFieldSizeFromData(data);
-        if (!getFieldSize().isEqual(dataSize)) clearField();
         updateFieldSize(dataSize);
 
         for (int y = 0; y < data.size(); y++) {
@@ -101,17 +107,8 @@ public class Field {
     }
 
     /**
-     * Метод очистки всех тайлов от типов (установка типа EMPTY)
+     * Метод загрузки бота на поле лабиринта.
      */
-    private void clearField() {
-        if (tiles == null) return;
-        for(Tile[] tilesArr: tiles) {
-            for(Tile tile: tilesArr) {
-                tile.setType(EnumTileType.EMPTY);
-            }
-        }
-    }
-
     public void loadBot() {
         if (bot == null) {
             bot = new Bot(this, EnumDirection.RIGHT, startXYIndexes);
@@ -184,19 +181,6 @@ public class Field {
 
     public Bot getBot() {
         return bot;
-    }
-
-    public EnumTileType getTileType(IntVector2 position) {
-        if (position.isSmaller(getFieldSize())) return tiles[position.x][position.y].getType();
-        return null;
-    }
-
-    public IntVector2 getStartXYIndexes() {
-        return new IntVector2(startXYIndexes);
-    }
-
-    public IntVector2 getEndXYIndexes() {
-        return new IntVector2(endXYIndexes);
     }
 
     public ScrollPane getScrollPane() {

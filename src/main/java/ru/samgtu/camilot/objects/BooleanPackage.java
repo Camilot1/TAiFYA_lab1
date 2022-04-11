@@ -34,34 +34,61 @@ public class BooleanPackage {
         this.booleans = booleans;
     }
 
+    /**
+     * Метод, устанавливающий число логических значений в режиме "перебора"
+     * @param maxBitsCount
+     */
     public void setMaxBitsCount(int maxBitsCount) {
         this.maxBitsCount = maxBitsCount;
         maxStep = (int)Math.round(Math.pow(2, maxBitsCount));
         booleans = getBinaryArray(step, maxBitsCount);
     }
 
+    /**
+     * Метод, проверяющий, остались ли ещё неиспользованные логические переменные из строки в режиме "обычного" моделирования
+     * @return
+     */
     public boolean hasNextBoolean() {
         return currentBoolean < booleans.length - 1;
     }
 
+    /**
+     * Метод получения первого логического значения из строки в режиме "обычного" моделирования
+     * @return логическое значение
+     */
     public synchronized boolean getFirstBoolean() {
         return booleans[0];
     }
 
+    /**
+     * Метод получения следующего логического значения из строки в режиме "обычного" моделирования
+     * @return логическое значение
+     */
     public synchronized boolean getNextBoolean() {
         currentBoolean++;
         return booleans[currentBoolean];
     }
 
+    /**
+     * Метод обновления текущего набора логических переменных в режиме "перебора", представленного в виде "двоичного кода"
+     */
     public synchronized void nextBooleans() {
         step++;
         booleans = getBinaryArray(step, maxBitsCount);
     }
 
+    /**
+     * Метод, реализующий установку ожидания строки из логических значения для режима "обычного" моделирования
+     * @param flag флаг
+     */
     public synchronized void setIsWaitedForValuesString(boolean flag) {
         isWaitedForValuesString = flag;
     }
 
+    /**
+     * Метод, реализующий установку факта получения строки из логических значения для режима "обычного" моделирования
+     * @param flag флаг
+     */
     public synchronized void setHasGivenValuesString(boolean flag) {
         this.hasGivenValuesString = flag;
     }
@@ -73,6 +100,10 @@ public class BooleanPackage {
     public int getMaxStep() {
         return maxStep;
     }
+
+    /**
+     * Метод получения требуемого количества логических значений, получаемый путём бинарной записи текущего этапа "подбора" значений
+     */
     private boolean[] getBinaryArray(int number, int base) {
         final boolean[] array = new boolean[base];
         int mask = 1;
@@ -115,6 +146,11 @@ public class BooleanPackage {
         this.labelStatus = null;
     }
 
+    /**
+     * Метод, реализующий ожидание ввода строки логических значения для токенов X в режиме "обычного" моделирования
+     * @param modeller объект моделлера
+     * @throws Exception ошибка при ожидании
+     */
     public void waitForValuesString(Modeller modeller) throws Exception {
         if (btnNextStep == null) throw new Exception("Не подключена кнопка следующего хода.");
         if (tfInput == null) throw new Exception("Не подключена кнопка текстового поля с входными данными.");
@@ -139,6 +175,12 @@ public class BooleanPackage {
 
     }
 
+    /**
+     * Метод, реализующий ожидание ввода логического значения токена X в режиме пошагового моделирования
+     * @param modeller объект моделлера
+     * @param token токен X, ожидающий логическое значение
+     * @throws Exception ошибка при ожидании значения
+     */
     public void waitForNextStep(Modeller modeller, Token token) throws Exception {
         if (btnNextStep == null) throw new Exception("Не подключена кнопка следующего хода.");
         if (tfInput == null) throw new Exception("Не подключена кнопка текстового поля с входными данными.");
@@ -175,10 +217,19 @@ public class BooleanPackage {
         return type == EnumCalculateType.STEP_BY_STEP;
     }
 
+    /**
+     * Метод получения логического значения по индексу
+     * @param index индекс значения
+     * @return логическое значение
+     */
     public boolean getBoolean(int index) {
         return booleans[index];
     }
 
+    /**
+     * Метод установки значений логических переменных
+     * @param booleans значения
+     */
     public synchronized void setBooleans(boolean[] booleans) {
         this.booleans = booleans;
     }

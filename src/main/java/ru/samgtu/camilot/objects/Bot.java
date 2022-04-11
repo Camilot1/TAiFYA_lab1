@@ -29,16 +29,18 @@ public class Bot extends ColoredXYGuiObject {
         super(xyIndexes, Field.tileStartPosition, Field.tileSize, Field.tileXYGap, "#FFF506");
         this.field = field;
         this.modeller = new Modeller();
-
         screenShots = new ArrayList<>();
-
         root.getChildren().addAll(
                 labelDirection = GuiConstructor.createLabel("", new DoubleVector2(), Field.tileSize, Pos.CENTER)
         );
-
         setDirection(direction);
     }
 
+    /**
+     * Метод запуска процесса моделирования
+     * @param tokens список токенов из строки с ЛСА
+     * @throws Exception ошибка при моделировании
+     */
     public void start(List<Token> tokens) throws Exception {
         BooleanPackage booleanPackage = new BooleanPackage(EnumCalculateType.BOT, checkDirections());
         booleanPackage.setBot(this);
@@ -63,10 +65,17 @@ public class Bot extends ColoredXYGuiObject {
         else this.screenShots = screenShots;
     }
 
+    /**
+     * Метод создания и добавления скриншота в историю.
+     */
     public void makeScreenShot() {
         screenShots.add(new ScreenShot(getPosition(), getDirection()));
     }
 
+    /**
+     * Метод загрузки информации из скриншота
+     * @param index индекс скриншота
+     */
     public void loadScreenShot(int index) {
         if (index < screenShots.size()) {
             setXYIndexes(screenShots.get(index).getPosition());
@@ -91,12 +100,25 @@ public class Bot extends ColoredXYGuiObject {
         labelDirection.setText(String.valueOf(direction.getDirectionChar()));
     }
 
+    /**
+     * Метод перемещения на X и Y клеток относительно текущей позиции
+     * @param position X и Y смещения позиции
+     */
     public void moveByDifference(IntVector2 position) {
         IntVector2 tempVector = getXyIndexes();
         tempVector.plus(position);
         setXYIndexes(tempVector);
     }
 
+    /**
+     * Метод получения текущей информации о территории вокруг бота
+     * @return массив логических переменных
+     * [0] (X1) – проверка, есть ли слева стена.
+     * [1] (X2) – проверка, есть ли спереди стена.
+     * [3] (X3) – проверка, есть ли справа стена.
+     * [4] (X4) – проверка, находится ли на финише.
+     * [5] (X5) – проверка, находится ли на старте.
+     */
     public boolean[] checkDirections() {
         Tile[][] tiles = field.getTiles();
 
@@ -119,6 +141,11 @@ public class Bot extends ColoredXYGuiObject {
         return xs;
     }
 
+    /**
+     * Метод выполнения Y команды. По завершении, делает и записывает скриншот на новой позиции.
+     * @param token Y токен
+     * @throws Exception ошибка при выполнении команды
+     */
     public void executeCommand(Token token) throws Exception {
         switch (token.toString()) {
             case "Y1":
@@ -134,5 +161,4 @@ public class Bot extends ColoredXYGuiObject {
         }
         makeScreenShot();
     }
-
 }

@@ -28,6 +28,10 @@ public class TokenPackage {
         return bot != null;
     }
 
+    /**
+     * Метод старта проигрывания истории скриншотов. Запускается либо по завершении моделирования бота,
+     * либо вручную пользователем через соответствующую кнопку.
+     */
     public void playScreenShots() {
         if (hasField()) field.play();
     }
@@ -60,6 +64,10 @@ public class TokenPackage {
         this.bot = null;
     }
 
+    /**
+     * Метод вывода сообщения о бесконечном цикле для пользователя в режиме "перебора"
+     * @param booleans набор логических значений, при котором был получен бесконечный цикл
+     */
     public void infiniteCycle(boolean[] booleans) {
         sb.setLength(0);
         sb.append('[');
@@ -69,10 +77,23 @@ public class TokenPackage {
         sb.setLength(0);
     }
 
+    /**
+     * Метод для установки текста в поле вывода.
+     * @param text тектс
+     */
     public synchronized void setTAText(String text) {
         doJavaFXEvent(e -> taOutput.appendText(text));
     }
 
+    /**
+     * Метод записи в результат токена, полученного от моделлера.
+     * Если выбран "обычный" или "пошаговый" режим, то токен записывается в поле выходных данных.
+     * Если выбран режим "перебора", то сначала записывается набор логических переменных, а потом все полученные ранее токены Y.
+     * Если выбран режим "бота", то полученный Y токен, если он не является начальным или конечным, отправляется боту в виде команды для выполнения.
+     * @param token Y токен
+     * @return true если бот выполнил команду, false если стоят другие режимы моделирования
+     * @throws Exception ошибка при записи токена
+     */
     public boolean addToken(Token token) throws Exception {
         switch (type) {
             case STEP_BY_STEP:
@@ -104,7 +125,10 @@ public class TokenPackage {
             default: return false;
         }
     }
-
+    /**
+     * Метод для корректной совместной работы Thread и JavaFX Thread
+     * @param event лямбда-выражение
+     */
     private void doJavaFXEvent(EventHandler<ActionEvent> event) {
         new Timeline(new KeyFrame(Duration.ONE, event)).play();
     }
