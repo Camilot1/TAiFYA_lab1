@@ -58,7 +58,7 @@ public class Modeller extends Thread {
     }
 
     /**
-     * Метод разморозки процесса моделирования.
+     * Метод разморозки потока моделирования.
      */
     public synchronized void play() {
         play = true;
@@ -66,14 +66,14 @@ public class Modeller extends Thread {
     }
 
     /**
-     * Метод заморозки процесса моделирования.
+     * Метод заморозки потока моделирования.
      */
     public void pause() {
         play = false;
     }
 
     /**
-     * Метод мгновенной и безусловной заморозки процесса моделирования.
+     * Метод мгновенной и безусловной заморозки потока моделирования.
      * Используется в момент ожидания получения новых логических значений.
      */
     public void instantPause() {
@@ -82,7 +82,7 @@ public class Modeller extends Thread {
     }
 
     /**
-     * Метод провеки состояния процесса.
+     * Метод провеки состояния потока.
      */
     private synchronized void checkPause() {
         while (!play) {
